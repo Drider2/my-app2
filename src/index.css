@@ -1,0 +1,1023 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ======================================================== */
+/* OFFLINE SELF-HOSTED FONTS                                */
+/* ======================================================== */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/Inter-400.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('/fonts/Inter-600.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Noto Sans Arabic';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/NotoSansArabic-400.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Noto Sans Arabic';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('/fonts/NotoSansArabic-600.woff2') format('woff2');
+}
+
+/* ======================================================== */
+/* 0. UNIFIED LAYOUT SHELL & Z-INDEX TOKENS                 */
+/* ======================================================== */
+:root {
+  --nav-height: 62px;
+  --nav-bottom-offset: max(10px, env(safe-area-inset-bottom));
+  --nav-total-clearance: calc(var(--nav-height) + var(--nav-bottom-offset) + 14px);
+  --fab-total-clearance: calc(var(--nav-total-clearance) + 66px);
+
+  /* Unified Z-Index Hierarchy Scale */
+  --z-content: 1;
+  --z-sticky-header: 20;
+  --z-nav: 30;
+  --z-fab: 35;
+  --z-sheet-scrim: 40;
+  --z-sheet: 50;
+  --z-dialog: 60;
+  --z-toast: 70;
+}
+
+/* ======================================================== */
+/* 1. ACCENT PRESETS & GLOW MATRIX                          */
+/* ======================================================== */
+:root,
+html[data-accent="cyan"],
+html:not([data-accent]) {
+  --accent: #22C7F2;
+  --accent-light: #A5EEFF;
+  --accent-rgb: 34 199 242;
+  --on-accent: #04070A;
+}
+
+html[data-accent="lime"] {
+  --accent: #A6E34B;
+  --accent-light: #DDF9A8;
+  --accent-rgb: 166 227 75;
+  --on-accent: #04070A;
+}
+
+html[data-accent="violet"] {
+  --accent: #A78BFA;
+  --accent-light: #DDD1FF;
+  --accent-rgb: 167 139 250;
+  --on-accent: #04070A;
+}
+
+html[data-accent="rose"] {
+  --accent: #FF7A9C;
+  --accent-light: #FFC2D2;
+  --accent-rgb: 255 122 156;
+  --on-accent: #04070A;
+}
+
+/* ======================================================== */
+/* 2. DARK GLASS NEUTRALS (Default Hero Look)               */
+/* ======================================================== */
+:root,
+html.dark {
+  --bg: #04070A;
+  --color-bg: #04070A;
+  --text-1: #FFFFFF;
+  --color-text-primary: #FFFFFF;
+  --text-2: rgba(255, 255, 255, 0.68);
+  --color-text-secondary: rgba(255, 255, 255, 0.68);
+  --text-3: rgba(255, 255, 255, 0.48);
+  --color-text-muted: rgba(255, 255, 255, 0.48);
+  --track: rgba(255, 255, 255, 0.10);
+  --hairline: rgba(255, 255, 255, 0.13);
+  --color-border: rgba(255, 255, 255, 0.13);
+
+  /* Glass Surface Tokens */
+  --color-surface: rgba(255, 255, 255, 0.07);
+  --color-surface-subtle: rgba(255, 255, 255, 0.04);
+  --card-hero-bg: linear-gradient(145deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.03));
+  --card-inner-glow: inset 0 1px 0 rgba(255, 255, 255, 0.20), 0 10px 32px rgb(var(--accent-rgb) / 0.12);
+
+  /* Component Token Aliases */
+  --color-card: rgba(255, 255, 255, 0.07);
+  --color-elevated: rgba(255, 255, 255, 0.09);
+  --color-input: rgba(255, 255, 255, 0.07);
+  --color-accent: var(--accent);
+  --color-accent-secondary: var(--accent-light);
+  --color-accent-subtle: rgb(var(--accent-rgb) / 0.14);
+  --color-accent-contrast: var(--on-accent);
+  --gradient-brand: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
+
+  /* Semantic Exceptions: NO RED/AMBER in normal UI (Over limit is white-tinted) */
+  --color-success: var(--accent);
+  --color-positive: var(--accent);
+  --color-negative: #FF6B6B;
+  --color-warning: #FFFFFF;
+  --color-danger: #FFFFFF;
+  --color-destructive: #FF6B6B; /* Single red strictly for delete button text */
+
+  /* Navigation Tokens */
+  --nav-bar-bg: rgba(4, 7, 10, 0.75);
+  --nav-bar-border: rgba(255, 255, 255, 0.15);
+  --nav-bar-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18), 0 10px 30px rgba(0, 0, 0, 0.50);
+  --nav-icon-inactive: var(--text-3);
+  --nav-active-pill-bg: rgb(var(--accent-rgb) / 0.20);
+  --nav-active-pill-border: rgb(var(--accent-rgb) / 0.45);
+  --nav-active-pill-glow: 0 0 14px rgb(var(--accent-rgb) / 0.40);
+  --nav-active-label: var(--accent-light);
+  --nav-fab-bg: linear-gradient(135deg, var(--accent), var(--accent-light));
+  --nav-fab-text: var(--on-accent);
+  --nav-fab-shadow: 0 0 26px rgb(var(--accent-rgb) / 0.75), inset 0 1px 0 rgba(255, 255, 255, 0.50);
+}
+
+/* ======================================================== */
+/* 3. LIGHT THEME TOKENS (Glass + 25% Darkened Accents)     */
+/* ======================================================== */
+html.light {
+  --bg: #EEF4F6;
+  --color-bg: #EEF4F6;
+  --text-1: #0B1A1F;
+  --color-text-primary: #0B1A1F;
+  --text-2: rgba(11, 26, 31, 0.66);
+  --color-text-secondary: rgba(11, 26, 31, 0.66);
+  --text-3: rgba(11, 26, 31, 0.46);
+  --color-text-muted: rgba(11, 26, 31, 0.46);
+  --track: rgba(11, 26, 31, 0.08);
+  --hairline: rgba(0, 0, 0, 0.08);
+  --color-border: rgba(0, 0, 0, 0.08);
+
+  /* Glass Surface Tokens */
+  --color-surface: rgba(255, 255, 255, 0.65);
+  --color-surface-subtle: rgba(255, 255, 255, 0.85);
+  --card-hero-bg: linear-gradient(145deg, rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0.60));
+  --card-inner-glow: inset 0 1px 0 rgba(255, 255, 255, 0.90), 0 8px 24px rgba(0, 0, 0, 0.04);
+
+  --color-card: rgba(255, 255, 255, 0.65);
+  --color-elevated: rgba(255, 255, 255, 0.85);
+  --color-input: rgba(255, 255, 255, 0.70);
+  --color-positive: var(--accent);
+  --color-negative: #FF6B6B;
+  --on-accent: #FFFFFF;
+
+  --nav-bar-bg: rgba(255, 255, 255, 0.80);
+  --nav-bar-border: rgba(0, 0, 0, 0.08);
+  --nav-bar-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9), 0 10px 30px rgba(0, 0, 0, 0.06);
+  --nav-icon-inactive: var(--text-3);
+  --nav-active-pill-bg: rgb(var(--accent-rgb) / 0.12);
+  --nav-active-pill-border: rgb(var(--accent-rgb) / 0.35);
+  --nav-active-pill-glow: 0 0 10px rgb(var(--accent-rgb) / 0.20);
+  --nav-active-label: var(--accent);
+}
+
+/* Light Mode 25% Darkened Accents for >= 4.5:1 Contrast */
+html.light[data-accent="cyan"],
+html.light:not([data-accent]) {
+  --accent: #0A93B8;
+  --accent-light: #076C87;
+  --accent-rgb: 10 147 184;
+}
+
+html.light[data-accent="lime"] {
+  --accent: #558E1B;
+  --accent-light: #447316;
+  --accent-rgb: 85 142 27;
+}
+
+html.light[data-accent="violet"] {
+  --accent: #7C5CE0;
+  --accent-light: #5A3CB5;
+  --accent-rgb: 124 92 224;
+}
+
+html.light[data-accent="rose"] {
+  --accent: #E03E6B;
+  --accent-light: #B0284D;
+  --accent-rgb: 224 62 107;
+}
+
+/* ======================================================== */
+/* 4. PERFORMANCE MATTE THEME (Zero Glow • Zero Animations) */
+/* Specially optimized for slow phones & battery saving     */
+/* ======================================================== */
+html.matte {
+  --bg: #090C0E;
+  --color-bg: #090C0E;
+  --text-1: #FFFFFF;
+  --color-text-primary: #FFFFFF;
+  --text-2: #A5B0B5;
+  --color-text-secondary: #A5B0B5;
+  --text-3: #6B787E;
+  --color-text-muted: #6B787E;
+  --track: #182024;
+  --hairline: #1F292E;
+  --color-border: #1F292E;
+
+  /* Solid Matte Flat Surfaces - Zero GPU Blur / Zero Filter Overhead */
+  --color-surface: #12171A;
+  --color-surface-subtle: #0E1315;
+  --card-hero-bg: #151C20;
+  --card-inner-glow: none;
+
+  --color-card: #12171A;
+  --color-elevated: #182024;
+  --color-input: #12171A;
+  --color-accent: var(--accent);
+  --color-accent-secondary: var(--accent-light);
+  --color-accent-subtle: rgb(var(--accent-rgb) / 0.14);
+  --color-accent-contrast: var(--on-accent);
+  --gradient-brand: var(--accent);
+
+  /* Flat Navigation Tokens */
+  --nav-bar-bg: #0D1214;
+  --nav-bar-border: #1F292E;
+  --nav-bar-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+  --nav-icon-inactive: #6B787E;
+  --nav-active-pill-bg: rgb(var(--accent-rgb) / 0.16);
+  --nav-active-pill-border: rgb(var(--accent-rgb) / 0.35);
+  --nav-active-pill-glow: none;
+  --nav-active-label: var(--accent);
+  --nav-fab-bg: var(--accent);
+  --nav-fab-text: var(--on-accent);
+  --nav-fab-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+/* Completely hide blurred ambient glow orbs in matte mode */
+html.matte .ambient-glow-orbs,
+html.matte [data-ambient-glow="true"] {
+  display: none !important;
+}
+
+/* Strip text-shadows, box-shadow glows and blurs in matte mode */
+html.matte *,
+html.matte *:before,
+html.matte *:after {
+  text-shadow: none !important;
+  box-shadow: none !important;
+  filter: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+/* Strip animations & transitions for ultra-high FPS on slow phones */
+html.matte *,
+html.matte *::before,
+html.matte *::after {
+  animation-duration: 0.001ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.001ms !important;
+  scroll-behavior: auto !important;
+}
+
+/* ======================================================== */
+/* BASE RESETS & GLOBAL TYPOGRAPHY                          */
+/* ======================================================== */
+html {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background-color: var(--color-bg);
+  color: var(--color-text-primary);
+}
+
+/* Selection styling */
+::selection {
+  background-color: var(--color-accent-subtle);
+  color: var(--color-text-primary);
+}
+
+body {
+  margin: 0;
+  background-color: var(--color-bg);
+  color: var(--color-text-primary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  touch-action: manipulation;
+  transition: background-color 0.15s ease, color 0.15s ease;
+  min-height: 100vh;
+}
+
+/* Inputs, selects, and textareas default styling */
+input, select, textarea {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-primary);
+  border-radius: 12px;
+  font-family: inherit;
+}
+
+input:focus, select:focus, textarea:focus {
+  outline: none;
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 2px var(--color-accent-subtle);
+}
+
+input::placeholder, textarea::placeholder {
+  color: var(--color-text-muted);
+}
+
+/* Hide scrollbars for clean mobile feel */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Tap feedback */
+.tap-feedback {
+  transition: transform 0.15s cubic-bezier(0.2, 0, 0, 1), opacity 0.15s ease;
+}
+.tap-feedback:active {
+  transform: scale(0.97);
+  opacity: 0.92;
+}
+
+/* ======================================================== */
+/* GLASS PRIMITIVES & SEMANTIC STYLES                        */
+/* ======================================================== */
+
+/* Solid Clean Card (No Glass, No Glow) */
+.glass-card,
+.card-clean,
+.card-hero,
+.card-premium {
+  background: var(--color-card, #14171F);
+  border: 1px solid var(--color-border, rgba(255, 255, 255, 0.08));
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.25), 0 1px 2px -1px rgba(0, 0, 0, 0.2);
+  border-radius: 16px;
+  position: relative;
+  overflow: hidden;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+@supports not () {
+  .glass-card,
+  .card-clean,
+  .card-hero,
+  .card-premium {
+    background: rgba(16, 24, 28, 0.88);
+  }
+}
+
+html.light .glass-card,
+html.light .card-clean,
+html.light .card-hero,
+html.light .card-premium {
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.06), 0 1px 2px -1px rgba(0, 0, 0, 0.04);
+}
+
+/* Solid Chips & Tiles */
+.glass-chip {
+  background: var(--color-surface, #1C202B);
+  border: 1px solid var(--color-border, rgba(255, 255, 255, 0.08));
+  border-radius: 99px;
+  padding: 4px 11px;
+  font-size: 12px;
+  line-height: 1.25;
+}
+
+.glass-tile,
+.card-subtle,
+.card-secondary {
+  background: var(--color-surface, #1A1D27);
+  border: 1px solid var(--color-border, rgba(255, 255, 255, 0.08));
+  border-radius: 14px;
+  overflow: hidden;
+  position: relative;
+}
+
+html.light .glass-chip,
+html.light .glass-tile,
+html.light .card-subtle,
+html.light .card-secondary {
+  background: rgba(0, 0, 0, 0.04);
+  border: 1px solid rgba(0, 0, 0, 0.07);
+}
+
+/* AccentChip (status) */
+.accent-chip {
+  color: var(--accent-light);
+  background: rgb(var(--accent-rgb) / 0.14);
+  border: 1px solid rgb(var(--accent-rgb) / 0.35);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+  border-radius: 99px;
+  padding: 4px 11px;
+  font-size: 12px;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Buttons */
+.btn-primary {
+  background: linear-gradient(135deg, var(--accent), var(--accent-light));
+  color: var(--on-accent);
+  border-radius: 16px;
+  height: 48px;
+  font-weight: 500;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+  transition: transform 0.15s ease, filter 0.15s ease, box-shadow 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 20px;
+  border: none;
+  cursor: pointer;
+}
+.btn-primary:active {
+  transform: scale(0.97);
+}
+
+.btn-secondary {
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  color: var(--text-1);
+  height: 48px;
+  border-radius: 16px;
+  font-weight: 500;
+  transition: transform 0.15s ease, background-color 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 20px;
+  cursor: pointer;
+}
+.btn-secondary:active {
+  transform: scale(0.97);
+}
+
+.btn-ghost {
+  color: var(--text-2);
+  background: transparent;
+  border: none;
+  height: 48px;
+  border-radius: 16px;
+  font-weight: 500;
+  transition: opacity 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 16px;
+  cursor: pointer;
+}
+.btn-ghost:active {
+  opacity: 0.7;
+}
+
+/* Inputs, selects, and textareas */
+.glass-input,
+input.glass-input,
+select.glass-input,
+textarea.glass-input {
+  height: 48px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  color: var(--text-1);
+  padding: 0 16px;
+  font-size: 14px;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.glass-input::placeholder {
+  color: var(--text-3);
+}
+.glass-input:focus {
+  outline: none;
+  border-color: rgb(var(--accent-rgb) / 0.60);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+
+/* Toggle switch */
+.glass-toggle {
+  width: 44px;
+  height: 26px;
+  border-radius: 99px;
+  background: rgba(255, 255, 255, 0.16);
+  position: relative;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+  border: 1px solid transparent;
+  cursor: pointer;
+}
+.glass-toggle.active {
+  background: rgb(var(--accent-rgb) / 0.35);
+  border: 1px solid rgb(var(--accent-rgb) / 0.60);
+}
+.glass-toggle-knob {
+  width: 20px;
+  height: 20px;
+  border-radius: 99px;
+  background: #FFFFFF;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+  position: absolute;
+  top: 2px;
+  left: 3px;
+  transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.glass-toggle.active .glass-toggle-knob {
+  transform: translateX(18px);
+}
+html[dir="rtl"] .glass-toggle.active .glass-toggle-knob {
+  transform: translateX(-18px);
+}
+
+/* Checkboxes */
+.glass-checkbox {
+  width: 24px;
+  height: 24px;
+  border-radius: 99px;
+  border: 1.5px solid rgba(255, 255, 255, 0.30);
+  background: transparent;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+  cursor: pointer;
+}
+.glass-checkbox.checked {
+  background: rgb(var(--accent-rgb));
+  border-color: rgb(var(--accent-rgb));
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+
+/* Solid Bottom Sheet & Modals */
+.glass-sheet {
+  background: var(--color-card, #14171F);
+  border-top: 1px solid var(--color-border, rgba(255, 255, 255, 0.12));
+  border-top-left-radius: 24px;
+  border-top-right-radius: 24px;
+  box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.4);
+}
+.glass-sheet-handle {
+  width: 36px;
+  height: 4px;
+  border-radius: 99px;
+  background: rgba(255, 255, 255, 0.24);
+  margin: 10px auto;
+}
+
+/* Typography Standards */
+.text-screen-title {
+  font-size: 22px;
+  line-height: 26px;
+  font-weight: 500;
+  color: var(--text-1);
+}
+.text-card-title {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--text-1);
+}
+.text-hero-number {
+  font-size: 34px;
+  line-height: 1.1;
+  font-weight: 500;
+  color: var(--text-1);
+}
+.text-secondary-number {
+  font-size: 28px;
+  line-height: 1.1;
+  font-weight: 500;
+  color: var(--text-1);
+}
+.text-quiet-label {
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--text-2);
+}
+
+.divider {
+  border-top: 1px solid var(--hairline);
+}
+
+/* Subtle glow effects */
+.glow-accent {
+  box-shadow: 0 0 20px -3px rgb(var(--accent-rgb) / 0.35);
+}
+
+
+/* ======================================================== */
+/* LEGACY HARDCODED HEX MAPPING (Seamless Migration)         */
+/* ======================================================== */
+.bg-\[\#101410\],
+.bg-\[\#0A0D0A\],
+.bg-\[\#101113\],
+.bg-\[\#090A0C\] {
+  background-color: var(--color-bg) !important;
+}
+
+.bg-\[\#1B231D\],
+.bg-\[\#191B1E\],
+.bg-\[\#141619\] {
+  background-color: var(--color-surface) !important;
+}
+
+.bg-\[\#151B16\],
+.bg-\[\#1C251F\],
+.bg-\[\#22252A\],
+.bg-\[\#1D2024\],
+.bg-\[\#111214\],
+.bg-\[\#222C24\],
+.bg-\[\#27362B\],
+.bg-\[\#292C31\],
+.bg-\[\#25292E\] {
+  background-color: var(--color-surface-subtle) !important;
+}
+
+/* Translucent surfaces */
+.bg-\[\#151B16\]\/90,
+.bg-\[\#151B16\]\/95,
+.bg-\[\#191B1E\]\/90,
+.bg-\[\#191B1E\]\/95 {
+  background-color: var(--color-surface) !important;
+}
+
+.bg-\[\#101410\]\/80,
+.bg-\[\#101410\]\/90,
+.bg-\[\#101113\]\/80,
+.bg-\[\#101113\]\/90 {
+  background-color: var(--color-bg) !important;
+}
+
+.bg-\[\#A6D96A\]\/10,
+.bg-\[\#D5D7DA\]\/10,
+.bg-\[\#A6D96A\]\/15,
+.bg-\[\#A6D96A\]\/20,
+.bg-\[\#D5D7DA\]\/20 {
+  background-color: var(--color-accent-subtle) !important;
+}
+
+/* Texts */
+.text-\[\#F2F5F1\],
+.text-\[\#F5F5F5\] {
+  color: var(--color-text-primary) !important;
+}
+
+.text-\[\#A1ABA2\],
+.text-\[\#A4A7AD\],
+.text-\[\#A4A9B0\] {
+  color: var(--color-text-secondary) !important;
+}
+
+.text-\[\#707B71\],
+.text-\[\#6C727B\],
+.text-\[\#747980\],
+.text-\[\#636973\] {
+  color: var(--color-text-muted) !important;
+}
+
+.text-\[\#A6D96A\],
+.text-\[\#B5BDC6\],
+.text-\[\#D5D7DA\] {
+  color: var(--color-accent) !important;
+}
+
+.text-\[\#83A98A\],
+.text-\[\#8A929B\],
+.text-\[\#858B93\] {
+  color: var(--color-accent) !important;
+}
+
+.text-\[\#101410\],
+.text-\[\#111214\] {
+  color: var(--color-accent-contrast) !important;
+}
+
+/* Accent buttons */
+.bg-\[\#A6D96A\],
+.bg-\[\#D5D7DA\],
+.bg-\[\#E0E3E7\] {
+  background-color: var(--color-accent) !important;
+  color: var(--color-accent-contrast) !important;
+}
+
+.hover\:bg-\[\#b8e482\]:hover,
+.hover\:bg-\[\#B8E482\]:hover {
+  filter: brightness(1.08);
+}
+
+.bg-\[\#83A98A\],
+.bg-\[\#8A929B\] {
+  background-color: var(--color-accent-subtle) !important;
+  color: var(--color-accent) !important;
+}
+
+/* Borders */
+.border-\[\#2A342C\],
+.border-\[\#364438\],
+.border-\[\#34383E\],
+.border-\[\#30353B\],
+.border-\[\#22252A\],
+.border-\[\#1B231D\] {
+  border-color: var(--color-border) !important;
+}
+
+.hover\:border-\[\#A6D96A\]\/30:hover,
+.hover\:border-\[\#A6D96A\]\/40:hover,
+.hover\:border-\[\#858B93\]\/40:hover,
+.hover\:border-\[\#858B93\]\/50:hover {
+  border-color: var(--color-accent) !important;
+}
+
+/* Rings & Focus */
+.focus\:ring-\[\#A6D96A\]:focus,
+.ring-\[\#D5D7DA\] {
+  --tw-ring-color: var(--color-accent) !important;
+}
+
+.focus\:ring-offset-\[\#151B16\]:focus {
+  --tw-ring-offset-color: var(--color-surface) !important;
+}
+
+/* ======================================================== */
+/* SEMANTIC WHITE CEILING RULE MAPPING                      */
+/* Over-limit/exceeded states mapped to white; status to accent */
+/* ======================================================== */
+.text-amber-400,
+.text-amber-500,
+.text-amber-200,
+.text-yellow-400,
+.text-yellow-500 {
+  color: #FFFFFF !important;
+}
+
+.bg-amber-400,
+.bg-amber-500,
+.bg-amber-500\/10,
+.bg-amber-500\/20,
+.bg-yellow-400,
+.bg-yellow-500 {
+  background-color: rgba(255, 255, 255, 0.14) !important;
+  color: #FFFFFF !important;
+}
+
+.border-amber-500\/20,
+.border-amber-500\/30 {
+  border-color: rgba(255, 255, 255, 0.25) !important;
+}
+
+/* Destructive buttons keep #FF6B6B text, but general warning text turns white */
+.text-rose-400:not(.btn-destructive),
+.text-red-400:not(.btn-destructive),
+.text-red-500:not(.btn-destructive) {
+  color: #FFFFFF !important;
+}
+
+.bg-rose-500\/10,
+.bg-red-500\/10,
+.bg-red-500\/20 {
+  background-color: rgba(255, 255, 255, 0.14) !important;
+  color: #FFFFFF !important;
+}
+
+/* Emerald/Green status mapped to var(--accent-light) */
+.text-emerald-400,
+.text-emerald-500,
+.text-green-400,
+.text-green-500 {
+  color: var(--accent-light) !important;
+}
+
+.bg-emerald-500\/10,
+.bg-emerald-500\/20,
+.bg-green-500\/10 {
+  background-color: rgb(var(--accent-rgb) / 0.14) !important;
+  color: var(--accent-light) !important;
+}
+
+.border-emerald-500\/20,
+.border-emerald-500\/30 {
+  border-color: rgb(var(--accent-rgb) / 0.35) !important;
+}
+
+/* ======================================================== */
+/* 60FPS MOTION & KEYFRAME ANIMATIONS                      */
+/* ======================================================== */
+@keyframes fadeInSlide {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes sheetSlideUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+@keyframes popScale {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.18);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes pulseGlow {
+  0%, 100% {
+    filter: drop-shadow(0 0 6px rgb(var(--accent-rgb) / 0.4));
+  }
+  50% {
+    filter: drop-shadow(0 0 16px rgb(var(--accent-rgb) / 0.75));
+  }
+}
+
+@keyframes shimmerScan {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* Screen / Tab transition: 220ms fade + 6px subtle slide */
+.animate-enter {
+  animation: fadeInSlide 220ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  will-change: opacity, transform;
+}
+
+/* Card entry: 500ms smooth cubic */
+.animate-card {
+  animation: fadeInSlide 500ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  will-change: opacity, transform;
+}
+
+/* Bottom-sheet slide up */
+.animate-sheet-up {
+  animation: sheetSlideUp 280ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  will-change: transform;
+}
+
+/* Micro-interaction tap pop */
+.animate-pop {
+  animation: popScale 200ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+/* Daily score 10/10 milestone subtle glow pulse */
+.animate-pulse-glow {
+  animation: pulseGlow 2.5s ease-in-out infinite;
+}
+
+/* Skeleton shimmer */
+.animate-shimmer {
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0.10) 50%, rgba(255, 255, 255, 0.04) 100%);
+  background-size: 200% 100%;
+  animation: shimmerScan 1.6s ease-in-out infinite;
+}
+
+/* Stagger delay utility classes (80ms increments) */
+.stagger-1 { animation-delay: 80ms; }
+.stagger-2 { animation-delay: 160ms; }
+.stagger-3 { animation-delay: 240ms; }
+.stagger-4 { animation-delay: 320ms; }
+.stagger-5 { animation-delay: 400ms; }
+.stagger-6 { animation-delay: 480ms; }
+.stagger-7 { animation-delay: 560ms; }
+.stagger-8 { animation-delay: 640ms; }
+
+/* ======================================================== */
+/* GYM & BODY MOTION & KINETICS (Phase 3)                   */
+/* ======================================================== */
+@keyframes gymCardEnter {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-gym-card {
+  animation: gymCardEnter 420ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  will-change: opacity, transform;
+}
+
+.gym-stagger-1 { animation-delay: 0ms; }
+.gym-stagger-2 { animation-delay: 60ms; }
+.gym-stagger-3 { animation-delay: 120ms; }
+.gym-stagger-4 { animation-delay: 180ms; }
+.gym-stagger-5 { animation-delay: 240ms; }
+.gym-stagger-6 { animation-delay: 300ms; }
+
+@keyframes gymDoneCirclePop {
+  0% {
+    transform: scale(0.6);
+    opacity: 0;
+  }
+  65% {
+    transform: scale(1.12);
+    opacity: 1;
+  }
+  85% {
+    transform: scale(0.96);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.animate-done-circle {
+  animation: gymDoneCirclePop 500ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  will-change: transform, opacity;
+}
+
+@keyframes gymHeatmapColFade {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-heatmap-col {
+  animation: gymHeatmapColFade 320ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  will-change: opacity, transform;
+}
+
+/* ======================================================== */
+/* MONEY GLASS MOTION & MICRO-INTERACTIONS (Phase 3)       */
+/* ======================================================== */
+@keyframes moneyCardEnter {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-money-card {
+  animation: moneyCardEnter 460ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  will-change: opacity, transform;
+}
+
+.money-stagger-1 { animation-delay: 0ms; }
+.money-stagger-2 { animation-delay: 60ms; }
+.money-stagger-3 { animation-delay: 120ms; }
+.money-stagger-4 { animation-delay: 180ms; }
+.money-stagger-5 { animation-delay: 240ms; }
+.money-stagger-6 { animation-delay: 300ms; }
+
+@keyframes moneyGaugeDraw {
+  from {
+    stroke-dashoffset: 100;
+  }
+}
+
+.animate-money-gauge-arc {
+  animation: moneyGaugeDraw 750ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  will-change: stroke-dashoffset;
+}
+
+@keyframes moneyCalendarDayFade {
+  from {
+    opacity: 0;
+    transform: scale(0.92);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-money-day {
+  animation: moneyCalendarDayFade 280ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  will-change: opacity, transform;
+}

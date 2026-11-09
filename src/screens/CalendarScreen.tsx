@@ -1,0 +1,487 @@
+import React, { useState } from 'react';
+import { 
+  CalendarDays, 
+  CheckSquare, 
+  Clock, 
+  Plus, 
+  Check, 
+  AlertCircle,
+  Sparkles,
+  Calendar as CalendarIcon,
+  Trash2,
+  CheckCircle2
+} from 'lucide-react';
+import { db, generateUUID, getTodayLocalDate } from '../services/storage';
+import { Task, ModuleLayoutState, ModuleWidgetConfig, WidgetSize } from '../types';
+import { ModuleCustomizationService } from '../services/moduleCustomizationService';
+import { MODULE_WIDGET_REGISTRY } from '../services/moduleWidgetRegistry';
+import { ModuleEditHeader } from '../components/customization/ModuleEditHeader';
+import { ModuleWidgetContainer } from '../components/customization/ModuleWidgetContainer';
+import { ModuleAddWidgetModal } from '../components/customization/ModuleAddWidgetModal';
+import { ModulePresetModal } from '../components/customization/ModulePresetModal';
+import { CalendarWidgetRenderer } from '../components/calendar/CalendarWidgetRenderer';
+import { useTranslation } from '../services/i18n';
+
+interface CalendarScreenProps {
+  onRefresh: () => void;
+  onBack?: () => void;
+}
+
+export const CalendarScreen: React.FC<CalendarScreenProps> = ({ onRefresh, onBack }) => {
+  const { t, isRtl } = useTranslation();
+  const state = db.getState();
+  const today = getTodayLocalDate();
+  const [activeTab, setActiveTab] = useState<'overview' | 'agenda' | 'tasks'>('overview');
+  const [newTaskTitle, setNewTaskTitle] = useState('');
+
+  // Module Customization State
+  const [layout, setLayout] = useState<ModuleLayoutState>(ModuleCustomizationService.getLayout('calendar'));
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [draftWidgets, setDraftWidgets] = useState<ModuleWidgetConfig[]>([]);
+  const [isAddWidgetModalOpen, setIsAddWidgetModalOpen] = useState(false);
+  const [isPresetModalOpen, setIsPresetModalOpen] = useState(false);
+  const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
+  const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
+
+  const triggerToast = (msg: string) => {
+    setToastMessage(msg);
+    setTimeout(() => setToastMessage(null), 2600);
+  };
+
+  const activeTasks = (state.tasks || []).filter(t => !t.deleted_at);
+  const activeEvents = (state.events || []).filter(e => !e.deleted_at);
+
+  const handleStartEdit = () => {
+    setDraftWidgets([...layout.widgets]);
+    setIsEditMode(true);
+    setActiveTab('overview');
+  };
+
+  const handleCancelEdit = () => {
+    setIsEditMode(false);
+    setDraftWidgets([]);
+    setDraggedIndex(null);
+    setDragOverIndex(null);
+  };
+
+  const handleSaveLayout = () => {
+    const newLayout: ModuleLayoutState = {
+      ...layout,
+      preset: 'custom',
+      widgets: draftWidgets,
+      updated_at: Date.now(),
+    };
+    ModuleCustomizationService.saveLayout('calendar', newLayout);
+    setLayout(newLayout);
+    setIsEditMode(false);
+    triggerToast('✓ Calendar layout saved successfully');
+    onRefresh();
+  };
+
+  const handleResetDefault = () => {
+    const res = ModuleCustomizationService.resetToDefault('calendar');
+    setLayout(res);
+    setDraftWidgets([...res.widgets]);
+    triggerToast('✓ Reset to default layout');
+    onRefresh();
+  };
+
+  const handleApplyPreset = (presetId: string) => {
+    const res = ModuleCustomizationService.applyPreset('calendar', presetId);
+    setLayout(res);
+    setDraftWidgets([...res.widgets]);
+    triggerToast(`✓ Applied ${presetId.replace('_', ' ')}`);
+    onRefresh();
+  };
+
+  const handleAddWidget = (widgetType: string) => {
+    if (isEditMode) {
+      const def = MODULE_WIDGET_REGISTRY[widgetType];
+      const newW: ModuleWidgetConfig = {
+        id: `mod-calendar-${widgetType}-${Date.now().toString(36)}`,
+        widgetType,
+        size: def?.defaultSize || 'full',
+        visible: true,
+        order: draftWidgets.length,
+      };
+      setDraftWidgets(prev => [...prev, newW]);
+    } else {
+      const res = ModuleCustomizationService.addWidget('calendar', widgetType);
+      setLayout(res);
+    }
+    setIsAddWidgetModalOpen(false);
+    triggerToast('✓ Added widget to layout');
+    onRefresh();
+  };
+
+  const handleRemoveWidget = (widgetId: string) => {
+    if (isEditMode) {
+      setDraftWidgets(prev => prev.filter(w => w.id !== widgetId).map((w, idx) => ({ ...w, order: idx })));
+    } else {
+      const res = ModuleCustomizationService.removeWidget('calendar', widgetId);
+      setLayout(res);
+    }
+    triggerToast('✓ Removed card from page');
+  };
+
+  const handleToggleVisibility = (widgetId: string) => {
+    if (isEditMode) {
+      setDraftWidgets(prev => prev.map(w => w.id === widgetId ? { ...w, visible: !w.visible } : w));
+    } else {
+      const res = ModuleCustomizationService.toggleWidgetVisibility('calendar', widgetId);
+      setLayout(res);
+    }
+  };
+
+  const handleChangeSize = (widgetId: string, size: WidgetSize) => {
+    if (isEditMode) {
+      setDraftWidgets(prev => prev.map(w => w.id === widgetId ? { ...w, size } : w));
+    } else {
+      const res = ModuleCustomizationService.changeWidgetSize('calendar', widgetId, size);
+      setLayout(res);
+    }
+  };
+
+  const handleMoveUp = (index: number) => {
+    if (index <= 0) return;
+    const cloned = [...draftWidgets];
+    const [item] = cloned.splice(index, 1);
+    cloned.splice(index - 1, 0, item);
+    setDraftWidgets(cloned.map((w, i) => ({ ...w, order: i })));
+  };
+
+  const handleMoveDown = (index: number) => {
+    if (index >= draftWidgets.length - 1) return;
+    const cloned = [...draftWidgets];
+    const [item] = cloned.splice(index, 1);
+    cloned.splice(index + 1, 0, item);
+    setDraftWidgets(cloned.map((w, i) => ({ ...w, order: i })));
+  };
+
+  const handleDragStart = (e: React.DragEvent, index: number) => {
+    if (!isEditMode) return;
+    setDraggedIndex(index);
+    e.dataTransfer.effectAllowed = 'move';
+  };
+
+  const handleDragOver = (e: React.DragEvent, index: number) => {
+    if (!isEditMode || draggedIndex === null) return;
+    e.preventDefault();
+    if (dragOverIndex !== index) {
+      setDragOverIndex(index);
+    }
+  };
+
+  const handleDrop = (e: React.DragEvent, targetIndex: number) => {
+    e.preventDefault();
+    if (draggedIndex === null || draggedIndex === targetIndex) {
+      setDraggedIndex(null);
+      setDragOverIndex(null);
+      return;
+    }
+    const cloned = [...draftWidgets];
+    const [moved] = cloned.splice(draggedIndex, 1);
+    cloned.splice(targetIndex, 0, moved);
+    setDraftWidgets(cloned.map((w, i) => ({ ...w, order: i })));
+    setDraggedIndex(null);
+    setDragOverIndex(null);
+  };
+
+  const handleDragEnd = () => {
+    setDraggedIndex(null);
+    setDragOverIndex(null);
+  };
+
+  const handleToggleTask = (task: Task) => {
+    db.updateState(s => {
+      const t = s.tasks.find(item => item.id === task.id);
+      if (t) {
+        t.done = !t.done;
+        t.updated_at = Date.now();
+      }
+    });
+    onRefresh();
+  };
+
+  const handleCreateTask = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newTaskTitle.trim()) return;
+
+    db.updateState(s => {
+      const t: Task = {
+        id: generateUUID(),
+        title: newTaskTitle.trim(),
+        due_date: today,
+        due_time: '12:00',
+        done: false,
+        created_at: Date.now(),
+        updated_at: Date.now(),
+        deleted_at: null,
+      };
+      s.tasks.unshift(t);
+    });
+
+    triggerToast(`✓ Created task "${newTaskTitle.trim()}"`);
+    setNewTaskTitle('');
+    onRefresh();
+  };
+
+  const activeWidgets = isEditMode ? draftWidgets : layout.widgets.filter(w => w.visible);
+
+  return (
+    <div className="space-y-4 pb-28">
+      {/* Toast Feedback */}
+      {toastMessage && (
+        <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50 max-w-[350px] px-4 py-2.5 rounded-2xl bg-[var(--color-text-primary)] text-[var(--color-bg)] font-bold text-xs  border border-[var(--color-border)] flex items-center gap-2 animate-slide-down">
+          <CheckCircle2 className="w-4 h-4 stroke-[3]" />
+          <span>{toastMessage}</span>
+        </div>
+      )}
+
+      {/* Reusable Module Edit Header */}
+      <ModuleEditHeader
+        title="Agenda & Tasks"
+        subtitle="Virtual occurrences & floating local time"
+        isEditMode={isEditMode}
+        onStartEdit={handleStartEdit}
+        onCancelEdit={handleCancelEdit}
+        onSaveLayout={handleSaveLayout}
+        onOpenAddWidget={() => setIsAddWidgetModalOpen(true)}
+        onOpenPresets={() => setIsPresetModalOpen(true)}
+        onResetDefault={handleResetDefault}
+        onBack={onBack}
+      />
+
+      {/* Tabs */}
+      <div className="flex rounded-2xl bg-[var(--color-surface)] p-1 border border-[var(--color-border)] overflow-x-auto no-scrollbar gap-1">
+        <button
+          onClick={() => {
+            if (isEditMode) setIsEditMode(false);
+            setActiveTab('overview');
+          }}
+          className={`flex-1 py-2 px-3 text-xs font-semibold rounded-xl whitespace-nowrap transition-all tap-feedback min-h-[44px] ${
+            activeTab === 'overview'
+              ? 'bg-[var(--color-text-primary)] text-[var(--color-bg)] font-bold'
+              : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-elevated)]'
+          }`}
+        >
+          {t('common.overview', 'Overview')}
+        </button>
+        <button
+          onClick={() => {
+            if (isEditMode) setIsEditMode(false);
+            setActiveTab('agenda');
+          }}
+          className={`flex-1 py-2 px-3 text-xs font-semibold rounded-xl whitespace-nowrap transition-all tap-feedback min-h-[44px] ${
+            activeTab === 'agenda'
+              ? 'bg-[var(--color-text-primary)] text-[var(--color-bg)] font-bold'
+              : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-elevated)]'
+          }`}
+        >
+          {t('calendar.timeline', 'Timeline')}
+        </button>
+        <button
+          onClick={() => {
+            if (isEditMode) setIsEditMode(false);
+            setActiveTab('tasks');
+          }}
+          className={`flex-1 py-2 px-3 text-xs font-semibold rounded-xl whitespace-nowrap transition-all tap-feedback min-h-[44px] ${
+            activeTab === 'tasks'
+              ? 'bg-[var(--color-text-primary)] text-[var(--color-bg)] font-bold'
+              : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-elevated)]'
+          }`}
+        >
+          {t('calendar.tasks', 'Tasks')} ({activeTasks.filter(t => !t.done).length})
+        </button>
+      </div>
+
+      {/* ======================================================== */}
+      {/* 0. TAB: OVERVIEW (CUSTOMIZABLE CALENDAR WIDGETS GRID)     */}
+      {/* ======================================================== */}
+      {(activeTab === 'overview' || isEditMode) && (
+        <div className="space-y-4 animate-fade-in">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+            {activeWidgets.map((widgetConfig, idx) => (
+              <div
+                key={widgetConfig.id}
+                draggable={isEditMode}
+                onDragStart={(e) => handleDragStart(e, idx)}
+                onDragOver={(e) => handleDragOver(e, idx)}
+                onDrop={(e) => handleDrop(e, idx)}
+                onDragEnd={handleDragEnd}
+                className={`transition-all duration-150 ${
+                  isEditMode && dragOverIndex === idx ? 'border-t-2 border-[var(--color-accent)] pt-1' : ''
+                }`}
+              >
+                <ModuleWidgetContainer
+                  widget={widgetConfig}
+                  isEditMode={isEditMode}
+                  isFirst={idx === 0}
+                  isLast={idx === activeWidgets.length - 1}
+                  onMoveUp={() => handleMoveUp(idx)}
+                  onMoveDown={() => handleMoveDown(idx)}
+                  onRemove={() => handleRemoveWidget(widgetConfig.id)}
+                  onToggleVisibility={() => handleToggleVisibility(widgetConfig.id)}
+                  onChangeSize={(sz) => handleChangeSize(widgetConfig.id, sz)}
+                >
+                  <CalendarWidgetRenderer
+                    widget={widgetConfig}
+                    onRefresh={onRefresh}
+                    triggerToast={triggerToast}
+                  />
+                </ModuleWidgetContainer>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* ======================================================== */}
+      {/* 1. TAB: TIMELINE (DAILY OCCURRENCES)                     */}
+      {/* ======================================================== */}
+      {activeTab === 'agenda' && !isEditMode && (
+        <div className="space-y-3 animate-fade-in">
+          <div className="p-3.5 rounded-3xl bg-[var(--color-surface)] border border-[var(--color-border)] text-xs text-[var(--color-text-secondary)] ">
+            <strong className="text-[var(--color-text-primary)]">Occurrences, not copies:</strong> Habits and workout plans are dynamically projected on the fly, eliminating database duplication.
+          </div>
+
+          <div className="bg-[var(--color-card)] rounded-3xl p-4 border border-[var(--color-border)]  space-y-3">
+            <div className="flex items-center justify-between border-b border-[var(--color-border)] pb-2">
+              <span className="text-xs font-semibold text-[var(--color-text-primary)]">Today's Scheduled Timeline</span>
+              <span className="text-xs text-[var(--color-accent)] font-semibold bg-[var(--color-surface)] px-2.5 py-0.5 rounded-full border border-[var(--color-border)]">
+                Floating Time
+              </span>
+            </div>
+
+            <div className="space-y-2.5">
+              {activeEvents.map(event => (
+                <div key={event.id} className="flex items-start gap-3 p-3 rounded-2xl bg-[var(--color-surface)] border border-[var(--color-border)] shadow-sm">
+                  <div className="text-xs font-bold text-[var(--color-accent)] bg-[var(--color-card)] px-2 py-1 rounded-xl mt-0.5 border border-[var(--color-border)]">
+                    {event.start_time}
+                  </div>
+                  <div className="flex-1">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-semibold text-[var(--color-text-primary)]">{event.title}</span>
+                      <span className="text-xs px-1.5 py-0.2 rounded bg-[var(--color-surface)] text-[var(--color-text-secondary)] font-medium border border-[var(--color-border)]">
+                        Calendar Event
+                      </span>
+                    </div>
+                    <p className="text-xs text-[var(--color-text-secondary)] mt-0.5">{event.duration} mins • {event.notes || 'Downtown café'}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ======================================================== */}
+      {/* 2. TAB: TASKS CHECKLIST                                  */}
+      {/* ======================================================== */}
+      {activeTab === 'tasks' && !isEditMode && (
+        <div className="space-y-3 animate-fade-in">
+          <form onSubmit={handleCreateTask} className="flex gap-2">
+            <input
+              type="text"
+              placeholder="Add a new task..."
+              value={newTaskTitle}
+              onChange={(e) => setNewTaskTitle(e.target.value)}
+              className="flex-1 text-xs px-3.5 py-2.5 rounded-2xl border border-[var(--color-border)] focus:outline-none focus:border-[var(--color-accent)] bg-[var(--color-card)] text-[var(--color-text-primary)] shadow-sm placeholder-[var(--color-text-muted)]"
+            />
+            <button
+              type="submit"
+              className="px-4 py-2.5 bg-[var(--color-text-primary)] text-[var(--color-bg)] rounded-2xl text-xs font-bold shadow-sm tap-feedback flex items-center gap-1"
+            >
+              <Plus className="w-4 h-4 stroke-[3]" />
+              <span>Add</span>
+            </button>
+          </form>
+
+          <div className="space-y-2">
+            {activeTasks.map((task) => {
+              const isOverdue = !task.done && task.due_date && task.due_date < today;
+
+              return (
+                <div
+                  key={task.id}
+                  onClick={() => handleToggleTask(task)}
+                  className={`p-3.5 rounded-2xl border transition-all cursor-pointer flex items-center justify-between ${
+                    task.done
+                      ? 'bg-[var(--color-surface)]/60 border-[var(--color-border)] opacity-60'
+                      : isOverdue
+                      ? 'bg-[var(--color-card)] border-[var(--color-negative)]/40 shadow-sm'
+                      : 'bg-[var(--color-card)] border-[var(--color-border)] hover:border-[var(--color-accent)] shadow-sm'
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
+                    <div
+                      className={`w-5 h-5 rounded-lg border flex items-center justify-center transition-colors ${
+                        task.done
+                          ? 'bg-[var(--color-positive)] border-[var(--color-positive)] text-white'
+                          : 'border-[var(--color-border)] bg-[var(--color-surface)]'
+                      }`}
+                    >
+                      {task.done && <Check className="w-3.5 h-3.5 stroke-[3]" />}
+                    </div>
+                    <div>
+                      <div className={`text-xs font-medium ${task.done ? 'line-through text-[var(--color-text-muted)]' : 'text-[var(--color-text-primary)]'}`}>
+                        {task.title}
+                      </div>
+                      <div className="flex items-center gap-2 text-xs text-[var(--color-text-secondary)] mt-0.5">
+                        {isOverdue ? (
+                          <span className="text-[var(--color-negative)] font-medium flex items-center gap-1">
+                            <AlertCircle className="w-3 h-3" />
+                            Overdue ({task.due_date})
+                          </span>
+                        ) : (
+                          <span>Due: {task.due_date === today ? 'Today' : task.due_date} {task.due_time}</span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      if (confirm(`Delete task "${task.title}"?`)) {
+                        db.updateState(s => {
+                          const t = s.tasks.find(item => item.id === task.id);
+                          if (t) t.deleted_at = Date.now();
+                        });
+                        onRefresh();
+                      }
+                    }}
+                    className="p-1.5 rounded-lg text-[var(--color-text-muted)] hover:text-[var(--color-negative)] hover:bg-[var(--color-negative)]/10 transition-colors"
+                    title="Delete task"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* Module Customization Add Widget & Preset Modals */}
+      <ModuleAddWidgetModal
+        isOpen={isAddWidgetModalOpen}
+        onClose={() => setIsAddWidgetModalOpen(false)}
+        moduleId="calendar"
+        moduleTitle="Calendar & Tasks"
+        currentWidgets={isEditMode ? draftWidgets : layout.widgets}
+        onAddWidget={handleAddWidget}
+      />
+
+      <ModulePresetModal
+        isOpen={isPresetModalOpen}
+        onClose={() => setIsPresetModalOpen(false)}
+        moduleId="calendar"
+        moduleTitle="Calendar & Tasks"
+        activePreset={layout.preset}
+        onSelectPreset={handleApplyPreset}
+      />
+    </div>
+  );
+};

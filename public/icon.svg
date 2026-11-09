@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="gdIconBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0F1416" />
+      <stop offset="100%" stop-color="#07090A" />
+    </linearGradient>
+    <linearGradient id="gdLeafGrad" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#22C7F2" />
+      <stop offset="100%" stop-color="#A6E34B" />
+    </linearGradient>
+  </defs>
+  <!-- Background Squircle Container -->
+  <rect width="512" height="512" rx="128" fill="url(#gdIconBg)" />
+  <rect x="24" y="24" width="464" height="464" rx="104" fill="none" stroke="#1F262A" stroke-width="6"/>
+
+  <!-- Left Secondary Sprout Leaf -->
+  <path d="M256 350 C256 265 175 210 135 210 C135 295 205 350 256 350 Z" fill="url(#gdLeafGrad)" opacity="0.85" />
+  
+  <!-- Right Primary Sprout Leaf -->
+  <path d="M256 370 C256 210 375 140 375 140 C375 280 280 370 256 370 Z" fill="url(#gdLeafGrad)" />
+  
+  <!-- Central Stem Vein -->
+  <path d="M256 390 C256 295 295 235 330 195" stroke="#FFFFFF" stroke-width="10" stroke-linecap="round" fill="none" opacity="0.55" />
+</svg>
