@@ -14,7 +14,8 @@ import {
   Trash2, 
   Flame, 
   CheckCircle2,
-  Sparkles 
+  Sparkles,
+  Calculator 
 } from 'lucide-react';
 import { db, getTodayLocalDate } from '../services/storage';
 import { calculateMuscleRecoveryState } from '../services/calculation';
@@ -32,7 +33,8 @@ import {
   TodayWorkoutCard, 
   ProgressSection, 
   ActivityHeatmapCard, 
-  LastSessionCard 
+  LastSessionCard,
+  OneRepMaxModal 
 } from '../components/gym';
 import { 
   StatRange, 
@@ -69,6 +71,7 @@ export const GymScreen: React.FC<GymScreenProps> = ({ onRefresh }) => {
   const [isLogWeightOpen, setIsLogWeightOpen] = useState(false);
   const [isWorkoutModalOpen, setIsWorkoutModalOpen] = useState(false);
   const [isCreateProgramOpen, setIsCreateProgramOpen] = useState(false);
+  const [is1RMModalOpen, setIs1RMModalOpen] = useState(false);
 
   // Anatomical Body state
   const [selectedMuscle, setSelectedMuscle] = useState<MuscleId>('triceps');
@@ -285,6 +288,17 @@ export const GymScreen: React.FC<GymScreenProps> = ({ onRefresh }) => {
         </div>
 
         {/* 40px Glass Circle Button (Opens secondary tools & analytics) */}
+        <div className="flex items-center gap-2">
+        <button
+          type="button"
+          onClick={() => setIs1RMModalOpen(true)}
+          className="px-3 h-10 rounded-full bg-white/[0.06] hover:bg-white/[0.1] border border-[var(--color-border)] flex items-center gap-1.5 text-[var(--text-1)] hover:text-cyan-400 tap-feedback transition-colors shrink-0 shadow-sm text-xs font-semibold"
+          aria-label="1RM Calculator"
+          title="1RM and Training Zones Calculator"
+        >
+          <Calculator className="w-4 h-4 text-cyan-400" />
+          <span className="hidden sm:inline">1RM Calc</span>
+        </button>
         <button
           type="button"
           onClick={() => {
@@ -299,6 +313,7 @@ export const GymScreen: React.FC<GymScreenProps> = ({ onRefresh }) => {
         >
           <BarChart3 className="w-4 h-4 stroke-[2.2]" />
         </button>
+        </div>
       </header>
 
       {/* ======================================================== */}
@@ -856,7 +871,14 @@ export const GymScreen: React.FC<GymScreenProps> = ({ onRefresh }) => {
           </form>
         </div>
       )}
-    </div>
+    
+      {/* 1RM & Training Zones Calculator Modal */}
+      <OneRepMaxModal
+        isOpen={is1RMModalOpen}
+        onClose={() => setIs1RMModalOpen(false)}
+        defaultUnit={weightUnit}
+      />
+</div>
   );
 };
 
