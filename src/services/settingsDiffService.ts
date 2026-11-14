@@ -6,6 +6,7 @@
 // ========================================================
 
 import { 
+  DisplayMode,
   AppThemeMode, 
   AccentPreset, 
   DailyProgressSettings, 
@@ -22,6 +23,7 @@ import { DailyProgressService } from './dailyProgressService';
 import { applyTheme, applyAccent } from './themeService';
 import { getFontSizeScale, applyFontSize } from './fontSizeService';
 import { setLanguage, getLanguage, AppLanguage } from './i18n';
+import { LayoutService } from './layoutService';
 
 export interface SettingDiffItem {
   id: string;
@@ -47,6 +49,7 @@ export interface AppSettingsSnapshot {
   accent: AccentPreset;
   language: AppLanguage;
   fontSizeScale: number;
+  display_mode: DisplayMode;
   
   // Modules
   modules: Required<AppModulesConfig>;
@@ -96,6 +99,7 @@ export class SettingsDiffService {
       accent: state.settings.accent || 'cyan',
       language: getLanguage(),
       fontSizeScale: getFontSizeScale(),
+      display_mode: (state.settings.display_mode as DisplayMode) || 'auto',
       
       modules: {
         prayer: true,
@@ -235,6 +239,26 @@ export class SettingsDiffService {
         t('settings.textSize', 'Text Size'),
         `${Math.round(original.fontSizeScale * 100)}%`,
         `${Math.round(draft.fontSizeScale * 100)}%`
+      );
+    }
+
+    if (original.display_mode !== draft.display_mode) {
+      const modeName = (m: DisplayMode) => {
+        switch (m) {
+          case 'auto': return t('settings.displayAuto', 'Auto');
+          case 'phone': return t('settings.displayPhone', 'Phone');
+          case 'wide': return t('settings.displayWide', 'Wide');
+          case 'tablet': return t('settings.displayTablet', 'Tablet');
+          default: return m;
+        }
+      };
+      addDiff(
+        'appearance',
+        t('settings.appearanceTitle', 'Appearance'),
+        'display_mode',
+        t('settings.displaySize', 'Display Size'),
+        modeName(original.display_mode),
+        modeName(draft.display_mode)
       );
     }
 
@@ -632,6 +656,7 @@ export class SettingsDiffService {
       s.settings.journal_lock_enabled = draft.journal_lock_enabled;
       s.settings.theme = draft.theme;
       s.settings.accent = draft.accent;
+      s.settings.display_mode = draft.display_mode || 'auto';
       s.settings.modules = { ...draft.modules };
       s.settings.voice = { ...draft.voice };
 
@@ -678,5 +703,6 @@ export class SettingsDiffService {
     applyAccent(draft.accent, true);
     applyFontSize(draft.fontSizeScale, true);
     setLanguage(draft.language, true);
+    LayoutService.setDisplayMode(draft.display_mode || 'auto');
   }
 }

@@ -15,7 +15,10 @@ import {
   Flame, 
   CheckCircle2,
   Sparkles,
-  Calculator 
+  Calculator,
+  Timer,
+  Download,
+  Trophy
 } from 'lucide-react';
 import { db, getTodayLocalDate } from '../services/storage';
 import { calculateMuscleRecoveryState } from '../services/calculation';
@@ -34,7 +37,12 @@ import {
   ProgressSection, 
   ActivityHeatmapCard, 
   LastSessionCard,
-  OneRepMaxModal 
+  OneRepMaxModal,
+  RestTimerModal,
+  ExerciseCatalogView,
+  PersonalRecordsModal,
+  MuscleVolumeModal,
+  MacroTargetModal
 } from '../components/gym';
 import { 
   StatRange, 
@@ -64,7 +72,7 @@ export const GymScreen: React.FC<GymScreenProps> = ({ onRefresh }) => {
 
   // In-memory UI state (no schema changes)
   const [selectedRange, setSelectedRange] = useState<StatRange>('month');
-  const [activeSecondaryTab, setActiveSecondaryTab] = useState<'recovery' | 'weight' | 'programs' | 'history' | null>(null);
+  const [activeSecondaryTab, setActiveSecondaryTab] = useState<'recovery' | 'weight' | 'programs' | 'history' | 'exercises' | null>(null);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   // Modals
@@ -72,6 +80,10 @@ export const GymScreen: React.FC<GymScreenProps> = ({ onRefresh }) => {
   const [isWorkoutModalOpen, setIsWorkoutModalOpen] = useState(false);
   const [isCreateProgramOpen, setIsCreateProgramOpen] = useState(false);
   const [is1RMModalOpen, setIs1RMModalOpen] = useState(false);
+  const [isRestTimerOpen, setIsRestTimerOpen] = useState(false);
+  const [isPRModalOpen, setIsPRModalOpen] = useState(false);
+  const [isVolumeModalOpen, setIsVolumeModalOpen] = useState(false);
+  const [isMacroModalOpen, setIsMacroModalOpen] = useState(false);
 
   // Anatomical Body state
   const [selectedMuscle, setSelectedMuscle] = useState<MuscleId>('triceps');
@@ -301,6 +313,49 @@ export const GymScreen: React.FC<GymScreenProps> = ({ onRefresh }) => {
         </button>
         <button
           type="button"
+          onClick={() => setIsRestTimerOpen(true)}
+          className="px-3 h-10 rounded-full bg-white/[0.06] hover:bg-white/[0.1] border border-[var(--color-border)] flex items-center gap-1.5 text-[var(--text-1)] hover:text-cyan-400 tap-feedback transition-colors shrink-0 shadow-sm text-xs font-semibold"
+          aria-label="Rest Timer"
+          title="Workout Rest Interval Timer"
+        >
+          <Timer className="w-4 h-4 text-cyan-400" />
+          <span className="hidden sm:inline">Rest Timer</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setIsPRModalOpen(true)}
+          className="px-3 h-10 rounded-full bg-white/[0.06] hover:bg-white/[0.1] border border-[var(--color-border)] flex items-center gap-1.5 text-[var(--text-1)] hover:text-amber-400 tap-feedback transition-colors shrink-0 shadow-sm text-xs font-semibold"
+          aria-label="PR Wall of Fame"
+          title="Personal Records & Wall of Fame"
+        >
+          <Trophy className="w-4 h-4 text-amber-400" />
+          <span className="hidden sm:inline">PR Trophies</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setIsVolumeModalOpen(true)}
+          className="px-3 h-10 rounded-full bg-white/[0.06] hover:bg-white/[0.1] border border-[var(--color-border)] flex items-center gap-1.5 text-[var(--text-1)] hover:text-orange-400 tap-feedback transition-colors shrink-0 shadow-sm text-xs font-semibold"
+          aria-label="Muscle Volume Radar"
+          title="Weekly Muscle Volume & Hypertrophy Targets"
+        >
+          <Activity className="w-4 h-4 text-orange-400" />
+          <span className="hidden sm:inline">Volume Radar</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setIsMacroModalOpen(true)}
+          className="px-3 h-10 rounded-full bg-white/[0.06] hover:bg-white/[0.1] border border-[var(--color-border)] flex items-center gap-1.5 text-[var(--text-1)] hover:text-orange-400 tap-feedback transition-colors shrink-0 shadow-sm text-xs font-semibold"
+          aria-label="Macro & TDEE Desk"
+          title="Bodyweight Macros & TDEE Energy Desk"
+        >
+          <Flame className="w-4 h-4 text-orange-400" />
+          <span className="hidden sm:inline">Macro Desk</span>
+        </button>
+        <button
+          type="button"
           onClick={() => {
             const el = document.getElementById('gym-tools-section');
             if (el) {
@@ -410,7 +465,7 @@ export const GymScreen: React.FC<GymScreenProps> = ({ onRefresh }) => {
         </div>
 
         {/* Secondary Navigation Pills */}
-        <div className="grid grid-cols-4 p-1 rounded-2xl bg-white/[0.04] border border-[var(--color-border)] gap-1">
+        <div className="grid grid-cols-5 p-1 rounded-2xl bg-white/[0.04] border border-[var(--color-border)] gap-1">
           <button
             type="button"
             onClick={() => setActiveSecondaryTab(prev => prev === 'recovery' ? null : 'recovery')}
@@ -461,6 +516,18 @@ export const GymScreen: React.FC<GymScreenProps> = ({ onRefresh }) => {
           >
             <History className="w-3.5 h-3.5 shrink-0" />
             <span className="truncate">History</span>
+          </button>
+                  <button
+            type="button"
+            onClick={() => setActiveSecondaryTab(prev => prev === 'exercises' ? null : 'exercises')}
+            className={`py-2 px-1 text-[12px] font-medium rounded-xl flex flex-col items-center justify-center gap-1 min-h-[44px] transition-all tap-feedback ${
+              activeSecondaryTab === 'exercises'
+                ? 'bg-[rgb(var(--accent-rgb)/0.2)] text-[var(--accent-light)] border border-[rgb(var(--accent-rgb)/0.45)]'
+                : 'text-[var(--text-2)] hover:text-[var(--text-1)]'
+            }`}
+          >
+            <Dumbbell className="w-3.5 h-3.5 shrink-0" />
+            <span className="truncate">Catalog</span>
           </button>
         </div>
 
@@ -762,7 +829,22 @@ export const GymScreen: React.FC<GymScreenProps> = ({ onRefresh }) => {
                   })}
               </div>
             )}
+
+
           </div>
+        )}
+      
+        {/* 7.5. EXERCISE CATALOG & SEARCH */}
+        {activeSecondaryTab === 'exercises' && (
+          <ExerciseCatalogView
+            exercises={state.exercises}
+            workoutSessions={state.workoutSessions}
+            weightUnit={weightUnit}
+            onOpen1RM={(exerciseName) => {
+              setIs1RMModalOpen(true);
+            }}
+            onRefresh={onRefresh}
+          />
         )}
       </section>
 
@@ -877,6 +959,35 @@ export const GymScreen: React.FC<GymScreenProps> = ({ onRefresh }) => {
         isOpen={is1RMModalOpen}
         onClose={() => setIs1RMModalOpen(false)}
         defaultUnit={weightUnit}
+      />
+
+      {/* Interval Rest Timer Modal */}
+      <RestTimerModal
+        isOpen={isRestTimerOpen}
+        onClose={() => setIsRestTimerOpen(false)}
+      />
+
+      <PersonalRecordsModal
+        isOpen={isPRModalOpen}
+        onClose={() => setIsPRModalOpen(false)}
+        exercises={state.exercises}
+        workoutSessions={state.workoutSessions}
+        weightUnit={weightUnit}
+      />
+
+      {/* Weekly Muscle Volume & Hypertrophy Targets Modal */}
+      <MuscleVolumeModal
+        isOpen={isVolumeModalOpen}
+        onClose={() => setIsVolumeModalOpen(false)}
+        onShowToast={triggerToast}
+      />
+
+      {/* Bodyweight Macros & TDEE Energy Desk Modal */}
+      <MacroTargetModal
+        isOpen={isMacroModalOpen}
+        onClose={() => setIsMacroModalOpen(false)}
+        onRefresh={onRefresh}
+        onShowToast={triggerToast}
       />
 </div>
   );

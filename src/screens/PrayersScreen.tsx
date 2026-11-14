@@ -14,7 +14,11 @@ import {
   CheckCircle2,
   Sparkles,
   LayoutGrid,
-  ListCheck
+  ListCheck,
+  Download,
+  Compass,
+  MoonStar,
+  BookOpen
 } from 'lucide-react';
 import { db, getTodayLocalDate } from '../services/storage';
 import { PrayerService, PRAYER_NAMES, CALCULATION_METHODS } from '../services/prayerService';
@@ -25,7 +29,7 @@ import { ModuleEditHeader } from '../components/customization/ModuleEditHeader';
 import { ModuleWidgetContainer } from '../components/customization/ModuleWidgetContainer';
 import { ModuleAddWidgetModal } from '../components/customization/ModuleAddWidgetModal';
 import { ModulePresetModal } from '../components/customization/ModulePresetModal';
-import { PrayersWidgetRenderer } from '../components/prayers/PrayersWidgetRenderer';
+import { PrayersWidgetRenderer, QiblaModal, FastingTrackerModal, QuranKhatmahModal } from '../components/prayers';
 import { PrayerTracker, PillBars, StreakMilestoneBadge, RingProgress } from '../components/charts';
 
 interface PrayersScreenProps {
@@ -48,6 +52,24 @@ export const PrayersScreen: React.FC<PrayersScreenProps> = ({ onRefresh, onBack 
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
   const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [isQiblaModalOpen, setIsQiblaModalOpen] = useState(false);
+  const [isFastingModalOpen, setIsFastingModalOpen] = useState(false);
+  const [isQuranModalOpen, setIsQuranModalOpen] = useState(false);
+
+  const handleExportPrayerCsv = () => {
+    const csv = PrayerService.exportPrayerHistoryCsv();
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', `greendream_prayers_${getTodayLocalDate()}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+    triggerToast('✓ Prayer attendance records exported as CSV');
+  };
+
 
   const triggerToast = (msg: string) => {
     setToastMessage(msg);
@@ -247,15 +269,53 @@ export const PrayersScreen: React.FC<PrayersScreenProps> = ({ onRefresh, onBack 
         onOpenPresets={() => setIsPresetModalOpen(true)}
         onResetDefault={handleResetDefault}
         actionsRight={
-          <button
-            onClick={() => setIsSettingsOpen(!isSettingsOpen)}
-            className={`p-2 rounded-xl border border-[var(--color-border)] transition-all tap-feedback ${
-              isSettingsOpen ? 'bg-[var(--color-accent)] text-[#101410]' : 'bg-[var(--color-surface)] text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]'
-            }`}
-            title="Prayer Settings & Method"
-          >
-            <Sliders className="w-4 h-4" />
-          </button>
+          <div className="flex items-center gap-1.5">
+            <button
+              type="button"
+              onClick={() => setIsQuranModalOpen(true)}
+              className="p-2 rounded-xl bg-[var(--color-surface)] border border-[var(--color-border)] text-[var(--color-text-secondary)] hover:text-emerald-400 hover:bg-[var(--color-surface-subtle)] transition-all cursor-pointer shadow-sm"
+              title="Quran Recitation & Khatmah Tracker"
+              aria-label="Quran Recitation & Khatmah"
+            >
+              <BookOpen className="w-4 h-4 text-emerald-400" />
+            </button>
+            <button
+              type="button"
+              onClick={() => setIsFastingModalOpen(true)}
+              className="p-2 rounded-xl bg-[var(--color-surface)] border border-[var(--color-border)] text-[var(--color-text-secondary)] hover:text-amber-400 hover:bg-[var(--color-surface-subtle)] transition-all cursor-pointer shadow-sm"
+              title="Fasting Desk & Iftar Countdown"
+              aria-label="Fasting Desk"
+            >
+              <MoonStar className="w-4 h-4 text-amber-400" />
+            </button>
+            <button
+              type="button"
+              onClick={() => setIsQiblaModalOpen(true)}
+              className="p-2 rounded-xl bg-[var(--color-surface)] border border-[var(--color-border)] text-[var(--color-text-secondary)] hover:text-amber-400 hover:bg-[var(--color-surface-subtle)] transition-all cursor-pointer shadow-sm"
+              title="Qibla Compass & Direction"
+              aria-label="Qibla Compass"
+            >
+              <Compass className="w-4 h-4 text-amber-400" />
+            </button>
+            <button
+              type="button"
+              onClick={handleExportPrayerCsv}
+              className="p-2 rounded-xl bg-[var(--color-surface)] border border-[var(--color-border)] text-[var(--color-text-secondary)] hover:text-[var(--color-accent)] hover:bg-[var(--color-surface-subtle)] transition-all cursor-pointer shadow-sm"
+              title="Export Prayer Ledger (.CSV)"
+              aria-label="Export Prayer CSV"
+            >
+              <Download className="w-4 h-4" />
+            </button>
+            <button
+              onClick={() => setIsSettingsOpen(!isSettingsOpen)}
+              className={`p-2 rounded-xl border border-[var(--color-border)] transition-all tap-feedback ${
+                isSettingsOpen ? 'bg-[var(--color-accent)] text-[#101410]' : 'bg-[var(--color-surface)] text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]'
+              }`}
+              title="Prayer Settings & Method"
+            >
+              <Sliders className="w-4 h-4" />
+            </button>
+          </div>
         }
       />
 
@@ -590,6 +650,28 @@ export const PrayersScreen: React.FC<PrayersScreenProps> = ({ onRefresh, onBack 
         moduleTitle="Daily Prayers"
         activePreset={layout.preset}
         onSelectPreset={handleApplyPreset}
+      />
+
+      {/* Qibla Direction Compass Modal */}
+      <QiblaModal
+        isOpen={isQiblaModalOpen}
+        onClose={() => setIsQiblaModalOpen(false)}
+      />
+
+      {/* Fasting Desk & Iftar Countdown Modal */}
+      <FastingTrackerModal
+        isOpen={isFastingModalOpen}
+        onClose={() => setIsFastingModalOpen(false)}
+        onRefresh={onRefresh}
+        onShowToast={triggerToast}
+      />
+
+      {/* Quran Recitation & Khatmah Tracker Modal */}
+      <QuranKhatmahModal
+        isOpen={isQuranModalOpen}
+        onClose={() => setIsQuranModalOpen(false)}
+        onRefresh={onRefresh}
+        onShowToast={triggerToast}
       />
     </div>
   );

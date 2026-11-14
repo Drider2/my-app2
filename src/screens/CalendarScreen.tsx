@@ -1,17 +1,21 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { 
   CalendarDays, 
   CheckSquare, 
   Clock, 
-  Plus, 
+  Plus,
+  Tag,
+  Zap, 
   Check, 
   AlertCircle,
   Sparkles,
   Calendar as CalendarIcon,
   Trash2,
-  CheckCircle2
+  CheckCircle2,
+  Download
 } from 'lucide-react';
 import { db, generateUUID, getTodayLocalDate } from '../services/storage';
+import { parseSmartTaskInput, getPriorityStyles } from '../services/taskParserService';
 import { Task, ModuleLayoutState, ModuleWidgetConfig, WidgetSize } from '../types';
 import { ModuleCustomizationService } from '../services/moduleCustomizationService';
 import { MODULE_WIDGET_REGISTRY } from '../services/moduleWidgetRegistry';
@@ -35,6 +39,12 @@ export const CalendarScreen: React.FC<CalendarScreenProps> = ({ onRefresh, onBac
   const [newTaskTitle, setNewTaskTitle] = useState('');
   const [taskFilter, setTaskFilter] = useState<'all' | 'pending' | 'completed' | 'overdue'>('all');
   const [taskDueChoice, setTaskDueChoice] = useState<'today' | 'tomorrow'>('today');
+  const [priorityFilter, setPriorityFilter] = useState<'all' | 'high' | 'medium' | 'low'>('all');
+
+  // Real-time natural language smart task parsing
+  const liveParsed = useMemo(() => {
+    return parseSmartTaskInput(newTaskTitle, today);
+  }, [newTaskTitle, today]);
 
 
   // Module Customization State
@@ -207,6 +217,89 @@ export const CalendarScreen: React.FC<CalendarScreenProps> = ({ onRefresh, onBac
     onRefresh();
   };
 
+  const handleExportTasksCsv = () => {
+    const tasks = (state.tasks || []).filter(t => !t.deleted_at);
+    const headers = ['Task Title', 'Due Date', 'Due Time', 'Status', 'Created At'];
+    const rows = tasks.map(t => {
+      const sanitize = (str: string) => `"${str.replace(/"/g, '""')}"`;
+      return [
+        sanitize(t.title),
+        t.due_date || '',
+        t.due_time || '',
+        t.done ? 'Completed' : 'Pending',
+        new Date(t.created_at).toISOString().split('T')[0]
+      ].join(',');
+    });
+    const csv = [headers.join(','), ...rows].join('\n');
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', `greendream_tasks_${today}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+    triggerToast('✓ Exported tasks to CSV');
+  };
+
+  const handleExportCalendarIcs = () => {
+    const tasks = (state.tasks || []).filter(t => !t.deleted_at && !t.done);
+    const events = (state.events || []).filter(e => !e.deleted_at);
+
+    let ics = [
+      'BEGIN:VCALENDAR',
+      'VERSION:2.0',
+      'PRODID:-//GreenDream//Personal Management//EN',
+      'CALSCALE:GREGORIAN',
+      'METHOD:PUBLISH'
+    ];
+
+    for (const t of tasks) {
+      if (!t.due_date) continue;
+      const cleanDate = t.due_date.replace(/-/g, '');
+      const timePart = t.due_time ? t.due_time.replace(/:/g, '') + '00' : '090000';
+      ics.push(
+        'BEGIN:VEVENT',
+        `UID:${t.id}@greendream.app`,
+        `DTSTAMP:${cleanDate}T${timePart}Z`,
+        `DTSTART:${cleanDate}T${timePart}`,
+        `SUMMARY:${t.title.replace(/[,;\\]/g, ' ')}`,
+        'STATUS:NEEDS-ACTION',
+        'DESCRIPTION:Task created in GreenDream',
+        'END:VEVENT'
+      );
+    }
+
+    for (const ev of events) {
+      if (!ev.local_date) continue;
+      const cleanDate = ev.local_date.replace(/-/g, '');
+      const timePart = ev.start_time ? ev.start_time.replace(/:/g, '') + '00' : '100000';
+      ics.push(
+        'BEGIN:VEVENT',
+        `UID:${ev.id}@greendream.app`,
+        `DTSTAMP:${cleanDate}T${timePart}Z`,
+        `DTSTART:${cleanDate}T${timePart}`,
+        `SUMMARY:${ev.title.replace(/[,;\\]/g, ' ')}`,
+        `DESCRIPTION:${(ev.notes || '').replace(/[,;\\]/g, ' ')}`,
+        'END:VEVENT'
+      );
+    }
+
+    ics.push('END:VCALENDAR');
+    const icsContent = ics.join('\r\n');
+    const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', `greendream_schedule_${today}.ics`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+    triggerToast('✓ Exported schedule to iCalendar (.ICS)');
+  };
+
     const handleClearCompleted = () => {
     const completed = activeTasks.filter(t => t.done);
     if (completed.length === 0) return;
@@ -226,20 +319,21 @@ export const CalendarScreen: React.FC<CalendarScreenProps> = ({ onRefresh, onBac
     e.preventDefault();
     if (!newTaskTitle.trim()) return;
 
-    let targetDueDate = today;
-    if (taskDueChoice === 'tomorrow') {
-      const d = new Date();
-      d.setDate(d.getDate() + 1);
-      targetDueDate = d.toISOString().split('T')[0];
-    }
+    const finalDueDate = liveParsed.hasSmartTokens && liveParsed.dueDate !== today
+      ? liveParsed.dueDate
+      : taskDueChoice === 'tomorrow'
+      ? (() => { const d = new Date(); d.setDate(d.getDate() + 1); return d.toISOString().split('T')[0]; })()
+      : liveParsed.dueDate;
 
     db.updateState(s => {
       const t: Task = {
         id: generateUUID(),
-        title: newTaskTitle.trim(),
-        due_date: targetDueDate,
+        title: liveParsed.cleanTitle || newTaskTitle.trim(),
+        due_date: finalDueDate,
         due_time: '12:00',
         done: false,
+        priority: liveParsed.priority,
+        tags: liveParsed.tags.length > 0 ? liveParsed.tags : undefined,
         created_at: Date.now(),
         updated_at: Date.now(),
         deleted_at: null,
@@ -247,7 +341,7 @@ export const CalendarScreen: React.FC<CalendarScreenProps> = ({ onRefresh, onBac
       s.tasks.unshift(t);
     });
 
-    triggerToast(`✓ Created task "${newTaskTitle.trim()}"`);
+    triggerToast(`✓ Created task "${liveParsed.cleanTitle}" (${liveParsed.priority.toUpperCase()} priority)`);
     setNewTaskTitle('');
     onRefresh();
   };
@@ -276,6 +370,28 @@ export const CalendarScreen: React.FC<CalendarScreenProps> = ({ onRefresh, onBac
         onOpenPresets={() => setIsPresetModalOpen(true)}
         onResetDefault={handleResetDefault}
         onBack={onBack}
+        actionsRight={
+          <div className="flex items-center gap-1.5">
+            <button
+              type="button"
+              onClick={handleExportCalendarIcs}
+              className="p-1.5 rounded-xl bg-[var(--color-surface)] border border-[var(--color-border)] text-[var(--color-text-secondary)] hover:text-cyan-400 hover:bg-[var(--color-surface-subtle)] transition-all cursor-pointer shadow-sm"
+              title="Export iCalendar (.ICS) for Google/Apple Calendar"
+              aria-label="Export iCalendar"
+            >
+              <CalendarIcon className="w-4 h-4 text-cyan-400" />
+            </button>
+            <button
+              type="button"
+              onClick={handleExportTasksCsv}
+              className="p-1.5 rounded-xl bg-[var(--color-surface)] border border-[var(--color-border)] text-[var(--color-text-secondary)] hover:text-[var(--color-accent)] hover:bg-[var(--color-surface-subtle)] transition-all cursor-pointer shadow-sm"
+              title="Export Tasks (.CSV)"
+              aria-label="Export Tasks CSV"
+            >
+              <Download className="w-4 h-4" />
+            </button>
+          </div>
+        }
       />
 
       {/* Tabs */}
@@ -424,7 +540,7 @@ export const CalendarScreen: React.FC<CalendarScreenProps> = ({ onRefresh, onBac
               <div className="flex gap-2">
                 <input
                   type="text"
-                  placeholder="Add a new task..."
+                  placeholder="Add task... (e.g. 'Audit budget tomorrow !high #finance')"
                   value={newTaskTitle}
                   onChange={(e) => setNewTaskTitle(e.target.value)}
                   className="flex-1 text-xs px-3.5 py-2.5 rounded-xl border border-[var(--color-border)] focus:outline-none focus:border-cyan-500 bg-[var(--color-bg)] text-[var(--color-text-primary)] shadow-sm placeholder-[var(--color-text-muted)]"
@@ -437,6 +553,24 @@ export const CalendarScreen: React.FC<CalendarScreenProps> = ({ onRefresh, onBac
                   <span>Add</span>
                 </button>
               </div>
+
+              {/* Live Smart Parsing Preview Chips */}
+              {newTaskTitle.trim() && liveParsed.hasSmartTokens && (
+                <div className="flex items-center gap-1.5 flex-wrap pt-1 text-[11px] animate-fade-in">
+                  <span className="text-[var(--color-text-muted)]">Detected:</span>
+                  <span className="px-2 py-0.5 rounded-md bg-cyan-500/15 text-cyan-400 font-semibold border border-cyan-500/20">
+                    📅 {liveParsed.dueDate === today ? 'Today' : liveParsed.dueDate}
+                  </span>
+                  <span className={`px-2 py-0.5 rounded-md font-bold border ${getPriorityStyles(liveParsed.priority).badgeClass}`}>
+                    ⚡ {liveParsed.priority.toUpperCase()}
+                  </span>
+                  {liveParsed.tags.map((t: string) => (
+                    <span key={t} className="px-2 py-0.5 rounded-md bg-white/[0.06] text-[var(--color-text-secondary)] border border-[var(--color-border)]">
+                      #{t}
+                    </span>
+                  ))}
+                </div>
+              )}
 
               <div className="flex items-center justify-between text-xs pt-1">
                 <span className="text-[11px] text-[var(--color-text-muted)]">Due date:</span>
@@ -535,8 +669,20 @@ export const CalendarScreen: React.FC<CalendarScreenProps> = ({ onRefresh, onBac
                       {task.done && <Check className="w-3.5 h-3.5 stroke-[3]" />}
                     </div>
                     <div>
-                      <div className={`text-xs font-medium ${task.done ? 'line-through text-[var(--color-text-muted)]' : 'text-[var(--color-text-primary)]'}`}>
-                        {task.title}
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className={`text-xs font-medium ${task.done ? 'line-through text-[var(--color-text-muted)]' : 'text-[var(--color-text-primary)]'}`}>
+                          {task.title}
+                        </span>
+                        {task.priority && task.priority !== 'medium' && (
+                          <span className={`px-1.5 py-0.2 rounded text-[10px] font-bold border ${getPriorityStyles(task.priority).badgeClass}`}>
+                            {task.priority.toUpperCase()}
+                          </span>
+                        )}
+                        {task.tags?.map((t: string) => (
+                          <span key={t} className="px-1.5 py-0.2 rounded text-[10px] bg-white/[0.05] text-[var(--color-text-muted)] border border-[var(--color-border)]">
+                            #{t}
+                          </span>
+                        ))}
                       </div>
                       <div className="flex items-center gap-2 text-xs text-[var(--color-text-secondary)] mt-0.5">
                         {isOverdue ? (

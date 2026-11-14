@@ -25,15 +25,26 @@ import {
   Clock, 
   X, 
   FileText,
-  LineChart
+  LineChart,
+  Droplet,
+  Calculator,
+  ShoppingCart,
+  MoonStar,
+  Mic,
+  BedDouble,
+  Landmark,
+  Flame
 } from 'lucide-react';
 import { ScreenId } from './Navigation';
 import { QuickExpenseService } from '../services/quickExpenseService';
 import { LoanService } from '../services/loanService';
 import { FinanceService } from '../services/financeService';
+import { HydrationService } from '../services/hydrationService';
 import { db, generateUUID, getTodayLocalDate } from '../services/storage';
 import { useTranslation } from '../services/i18n';
 import { Haptics } from '../services/haptics';
+import { AudioNoteModal } from './journal/AudioNoteModal';
+import { SleepTrackerModal } from './health/SleepTrackerModal';
 
 interface AddActionSheetProps {
   isOpen: boolean;
@@ -50,6 +61,8 @@ export const AddActionSheet: React.FC<AddActionSheetProps> = ({
 }) => {
   const { t, isRtl } = useTranslation();
   const [activeCategory, setActiveCategory] = useState<'all' | 'daily' | 'money' | 'fitness' | 'personal' | 'management'>('all');
+  const [isAudioNoteOpen, setIsAudioNoteOpen] = useState(false);
+  const [isSleepModalOpen, setIsSleepModalOpen] = useState(false);
 
   // Sub-modal states for direct in-place actions
   const [activeModal, setActiveModal] = useState<
@@ -263,6 +276,18 @@ export const AddActionSheet: React.FC<AddActionSheetProps> = ({
       title: 'Daily Actions',
       actions: [
         {
+          id: 'log_hydration',
+          label: 'Log Water Intake (+250ml)',
+          desc: 'Quick glass of water for daily hydration',
+          icon: Droplet,
+          handler: () => {
+            HydrationService.addWater(250);
+            Haptics.success();
+            onClose();
+            if (onQuickAction) onQuickAction('hydration_logged');
+          },
+        },
+        {
           id: 'add_task',
           label: 'Add Task',
           desc: 'Create to-do item for today',
@@ -287,6 +312,26 @@ export const AddActionSheet: React.FC<AddActionSheetProps> = ({
           },
         },
         {
+          id: 'quran_reading',
+          label: 'Quran Recitation & Khatmah',
+          desc: 'Track daily pages, Juz progress & bookmark',
+          icon: BookOpen,
+          handler: () => {
+            onClose();
+            onNavigate('prayers');
+          },
+        },
+        {
+          id: 'fasting_desk',
+          label: 'Fasting Desk & Iftar Timer',
+          desc: 'Sunnah & Ramadan fasts, Suhur & Iftar countdown',
+          icon: MoonStar,
+          handler: () => {
+            onClose();
+            onNavigate('prayers');
+          },
+        },
+        {
           id: 'add_reminder',
           label: 'Add Maintenance Reminder',
           desc: 'Care, service, or shopping alert',
@@ -302,6 +347,46 @@ export const AddActionSheet: React.FC<AddActionSheetProps> = ({
       categoryId: 'money',
       title: 'Money & Finances',
       actions: [
+        {
+          id: 'zakat_charity',
+          label: 'Zakat & Charity Desk',
+          desc: 'Annual 2.5% wealth purification & Sadaqah tracking',
+          icon: MoonStar,
+          handler: () => {
+            onClose();
+            onNavigate('finance');
+          },
+        },
+        {
+          id: 'net_worth_runway',
+          label: 'Net Worth & Emergency Runway',
+          desc: 'Balance sheet assets, debt obligations & living expense runway',
+          icon: Landmark,
+          handler: () => {
+            onClose();
+            onNavigate('finance');
+          },
+        },
+        {
+          id: 'shopping_list',
+          label: 'Shopping & Grocery List',
+          desc: 'Track items to buy, cart cost & auto-log trip',
+          icon: ShoppingCart,
+          handler: () => {
+            onClose();
+            onNavigate('finance');
+          },
+        },
+        {
+          id: 'check_affordability',
+          label: 'Can I Afford This?',
+          desc: 'Simulate purchase impact on monthly runway',
+          icon: Calculator,
+          handler: () => {
+            onClose();
+            onNavigate('finance');
+          },
+        },
         {
           id: 'custom_expense',
           label: 'Add Custom Expense',
@@ -367,6 +452,16 @@ export const AddActionSheet: React.FC<AddActionSheetProps> = ({
           },
         },
         {
+          id: 'macro_tdee_desk',
+          label: 'Macro Targets & TDEE Desk',
+          desc: 'Calorie expenditure, BMR & tailored protein/carb/fat split',
+          icon: Flame,
+          handler: () => {
+            onClose();
+            onNavigate('gym');
+          },
+        },
+        {
           id: 'add_weight',
           label: 'Log Body Weight',
           desc: 'Daily weigh-in with trend tracking',
@@ -407,6 +502,24 @@ export const AddActionSheet: React.FC<AddActionSheetProps> = ({
           handler: () => {
             onClose();
             onNavigate('journal');
+          },
+        },
+        {
+          id: 'voice_note',
+          label: 'Quick Voice Note',
+          desc: 'Hands-free dictation & audio thought memo',
+          icon: Mic,
+          handler: () => {
+            setIsAudioNoteOpen(true);
+          },
+        },
+        {
+          id: 'log_sleep',
+          label: 'Log Sleep & Rest',
+          desc: 'Bedtime, wake up, quality & recovery debt',
+          icon: BedDouble,
+          handler: () => {
+            setIsSleepModalOpen(true);
           },
         },
         {
@@ -512,13 +625,13 @@ export const AddActionSheet: React.FC<AddActionSheetProps> = ({
   }).filter(Boolean) as typeof actionSections;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/60  animate-fade-in" onClick={onClose}>
+    <div className="fixed inset-0 z-50 flex phone:items-end wide:items-center tablet:items-center justify-center p-0 wide:p-4 tablet:p-6 bg-black/60 animate-fade-in" onClick={onClose}>
       <div 
-        className="w-full max-w-lg sm:max-w-xl max-h-[85vh] bg-[var(--color-card)] border border-[var(--color-border)] rounded-t-3xl shadow-2xl text-[var(--text-1)] flex flex-col overflow-hidden animate-sheet-up"
+        className="w-full phone:max-w-lg wide:max-w-xl tablet:max-w-2xl max-h-[85vh] bg-[var(--color-card)] border border-[var(--color-border)] phone:rounded-t-3xl wide:rounded-2xl tablet:rounded-2xl shadow-2xl text-[var(--text-1)] flex flex-col overflow-hidden animate-sheet-up"
         onClick={e => e.stopPropagation()}
       >
-        {/* Top Drag Handle */}
-        <div className="bg-[var(--color-card)] border border-[var(--color-border)] rounded-t-3xl shadow-2xl-handle shrink-0" />
+        {/* Top Drag Handle (Mobile Phone only) */}
+        <div className="phone:block wide:hidden tablet:hidden w-12 h-1 bg-[var(--color-border)] rounded-full mx-auto my-2 shrink-0" />
 
         {/* Top Header */}
         <div className="flex items-center justify-between px-5 py-3 border-b border-[var(--hairline)]">
@@ -572,7 +685,7 @@ export const AddActionSheet: React.FC<AddActionSheetProps> = ({
                 {sec.title}
               </h3>
 
-              <div className="grid grid-cols-1 gap-2">
+              <div className="grid grid-cols-1 wide:grid-cols-2 tablet:grid-cols-2 gap-2">
                 {sec.actions.map(act => {
                   const Icon = act.icon;
                   return (
@@ -1046,6 +1159,31 @@ export const AddActionSheet: React.FC<AddActionSheetProps> = ({
           </div>
         </div>
       )}
+
+      {/* Audio Voice Note Modal */}
+      <AudioNoteModal
+        isOpen={isAudioNoteOpen}
+        onClose={() => {
+          setIsAudioNoteOpen(false);
+          onClose();
+        }}
+        onSaved={() => {
+          onClose();
+          onNavigate('journal');
+        }}
+      />
+
+      {/* Sleep Tracker Modal */}
+      <SleepTrackerModal
+        isOpen={isSleepModalOpen}
+        onClose={() => {
+          setIsSleepModalOpen(false);
+          onClose();
+        }}
+        onRefresh={() => {
+          onClose();
+        }}
+      />
     </div>
   );
 };

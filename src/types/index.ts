@@ -156,6 +156,8 @@ export interface Task extends BaseEntity {
   due_time?: string; // 'HH:mm'
   done: boolean;
   event_id?: UUID | null;
+  priority?: 'low' | 'medium' | 'high';
+  tags?: string[];
 }
 
 export interface VirtualOccurrence {
@@ -222,6 +224,22 @@ export interface Category extends BaseEntity {
   rollover: 'reset' | 'carryover';
   alert_threshold?: number; // e.g. 0.8 (80%)
   color?: string;
+}
+
+export interface BalanceSheetAsset extends BaseEntity {
+  name: string;
+  category: 'liquid_cash' | 'savings' | 'bullion' | 'vehicle' | 'real_estate' | 'receivable' | 'investment' | 'other';
+  value_minor: number;
+  notes?: string;
+  is_auto_synced?: boolean;
+}
+
+export interface BalanceSheetLiability extends BaseEntity {
+  name: string;
+  creditor?: string;
+  amount_minor: number;
+  due_date?: string;
+  notes?: string;
 }
 
 export type SavingsGoalStatus = 'active' | 'paused' | 'archived';
@@ -378,6 +396,57 @@ export interface MaintenanceItem extends BaseEntity {
   is_purchased?: boolean;
   notes?: string;
   finance_category_id?: string; // e.g. 'cat-personal' or 'cat-car'
+}
+
+export interface FuelLogEntry extends BaseEntity {
+  odometer_km: number;
+  liters: number;
+  cost_minor: number;
+  fuel_type: 'essence' | 'gasoil' | 'gpl';
+  station_name?: string;
+  local_date: string; // 'YYYY-MM-DD'
+  notes?: string;
+}
+
+// ------------------------------------
+// Shopping & Supplies Checklist
+// ------------------------------------
+export type ShoppingCategory = 'groceries' | 'household' | 'fitness' | 'automotive' | 'other';
+
+export interface ShoppingItem extends BaseEntity {
+  name: string;
+  category: ShoppingCategory;
+  estimated_price: number; // in primary currency unit (e.g. DA)
+  quantity: number;
+  unit?: string; // 'kg', 'pcs', 'L', 'pack', etc.
+  is_completed: boolean;
+  notes?: string;
+  completed_at?: number | null;
+}
+
+// ------------------------------------
+// Fasting Tracker (Ramadan, Sunnah & Intermittent)
+// ------------------------------------
+export type FastingType = 'ramadan' | 'sunnah_monday_thursday' | 'white_days' | 'voluntary' | 'qada';
+
+export type IntermittentProtocol = '16_8' | '18_6' | '20_4' | '23_1' | '14_10' | 'circadian';
+
+export interface ActiveFastingSession {
+  id: string;
+  start_time_ms: number;
+  target_hours: number;
+  protocol: IntermittentProtocol | 'custom';
+  is_active: boolean;
+  notes?: string;
+}
+
+export interface FastingDayEntry extends BaseEntity {
+  local_date: string; // 'YYYY-MM-DD'
+  type: FastingType;
+  completed: boolean;
+  notes?: string;
+  suhur_completed?: boolean;
+  iftar_completed?: boolean;
 }
 
 // ------------------------------------
@@ -676,6 +745,9 @@ export const DEFAULT_FLAME_SETTINGS: FlameSettings = {
   showTenDayWords: true,
 };
 
+export type DisplayMode = 'auto' | 'phone' | 'wide' | 'tablet';
+export type LayoutSize = 'phone' | 'wide' | 'tablet';
+
 export interface AppSettings {
   user_name: string;
   currency_label: string; // e.g. 'DA' or 'EUR' or '$'
@@ -690,6 +762,7 @@ export interface AppSettings {
   language?: AppLanguage;
   accent?: AccentPreset; // 'cyan' | 'lime' | 'violet' | 'rose'
   font_size_scale?: number; // 0.85 to 1.20 (default 1.0)
+  display_mode?: DisplayMode; // 'auto' | 'phone' | 'wide' | 'tablet'
   ai?: AIAssistantSettings;
   voice?: VoiceSettings;
   flame?: FlameSettings;
@@ -909,5 +982,41 @@ export interface DailyProgressHistoryItem {
   discipline_score: number;
   discipline_status: DisciplineStatus;
 }
+
+// ------------------------------------
+// Sleep & Recovery Optimization
+// ------------------------------------
+export interface SleepEntry extends BaseEntity {
+  local_date: string; // YYYY-MM-DD
+  bedtime: string; // HH:mm e.g. "23:15"
+  wake_time: string; // HH:mm e.g. "07:00"
+  duration_minutes: number;
+  quality_score: number; // 1 to 5 (1: Restless, 2: Fragmented, 3: Fair, 4: Deep, 5: Optimal)
+  notes?: string;
+}
+
+// ------------------------------------
+// Quran Recitation & Khatmah Tracker
+// ------------------------------------
+export interface QuranReadingRecord {
+  id: string;
+  local_date: string;
+  pages_read: number;
+  ending_page: number;
+  timestamp: number;
+  note?: string;
+}
+
+export interface QuranKhatmahState {
+  current_page: number; // 1 to 604
+  daily_page_goal: number; // default: 20 pages (1 Juz)
+  target_days: number; // e.g. 30 days
+  khatmah_count: number; // number of completed full readings
+  started_at: number;
+  last_read_date?: string;
+  history: QuranReadingRecord[];
+}
+
+
 
 

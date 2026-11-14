@@ -34,7 +34,12 @@ import {
   HeartHandshake,
   Trash2,
   Search,
-  Download
+  Download,
+  Calculator,
+  Coins,
+  ShoppingCart,
+  MoonStar,
+  Landmark
 } from 'lucide-react';
 import { db, generateUUID, getTodayLocalDate, formatCurrency } from '../services/storage';
 import { FinanceService } from '../services/financeService';
@@ -86,6 +91,12 @@ import {
   ExpensesHistoryCard,
   TopCategoryTiles,
   DailyLimitCalendarCard,
+  RecurringSubscriptionsModal,
+  AffordabilityCalculatorModal,
+  CurrencyConverterModal,
+  ShoppingListModal,
+  ZakatCalculatorModal,
+  NetWorthModal,
 } from '../components/finance';
 
 interface FinanceScreenProps {
@@ -308,6 +319,12 @@ export const FinanceScreen: React.FC<FinanceScreenProps> = ({ onRefresh }) => {
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
   const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [isRecurringModalOpen, setIsRecurringModalOpen] = useState(false);
+  const [isAffordabilityModalOpen, setIsAffordabilityModalOpen] = useState(false);
+  const [isCurrencyModalOpen, setIsCurrencyModalOpen] = useState(false);
+  const [isShoppingListOpen, setIsShoppingListOpen] = useState(false);
+  const [isZakatModalOpen, setIsZakatModalOpen] = useState(false);
+  const [isNetWorthModalOpen, setIsNetWorthModalOpen] = useState(false);
 
   
   const handleExportCSV = () => {
@@ -818,6 +835,72 @@ export const FinanceScreen: React.FC<FinanceScreenProps> = ({ onRefresh }) => {
               title="Customize layout"
             >
               <Sliders className="w-4 h-4" />
+            </button>
+
+            {/* Subscriptions / Recurring Bills */}
+            <button
+              type="button"
+              onClick={() => setIsRecurringModalOpen(true)}
+              className="w-11 h-11 rounded-2xl bg-[var(--surface)] border border-[var(--hairline)] flex items-center justify-center text-[var(--text-2)] hover:text-cyan-400 hover:border-cyan-500/40 transition-all tap-feedback"
+              aria-label="Recurring Subscriptions & Bills"
+              title="Recurring Subscriptions & Bills"
+            >
+              <RotateCcw className="w-4 h-4" />
+            </button>
+
+            {/* Can I Afford It? Quick Purchase Simulator */}
+            <button
+              type="button"
+              onClick={() => setIsAffordabilityModalOpen(true)}
+              className="w-11 h-11 rounded-2xl bg-[var(--surface)] border border-[var(--hairline)] flex items-center justify-center text-[var(--text-2)] hover:text-cyan-400 hover:border-cyan-500/40 transition-all tap-feedback shadow-sm"
+              aria-label="Affordability Simulator"
+              title="Can I Afford It? Purchase Simulator"
+            >
+              <Calculator className="w-4 h-4 text-cyan-400" />
+            </button>
+
+            {/* Currency & FX Converter */}
+            <button
+              type="button"
+              onClick={() => setIsCurrencyModalOpen(true)}
+              className="w-11 h-11 rounded-2xl bg-[var(--surface)] border border-[var(--hairline)] flex items-center justify-center text-[var(--text-2)] hover:text-emerald-400 hover:border-emerald-500/40 transition-all tap-feedback shadow-sm"
+              aria-label="Currency Converter"
+              title="Currency & FX Converter"
+            >
+              <Coins className="w-4 h-4 text-emerald-400" />
+            </button>
+
+            {/* Smart Shopping & Grocery List */}
+            <button
+              type="button"
+              onClick={() => setIsShoppingListOpen(true)}
+              className="w-11 h-11 rounded-2xl bg-[var(--surface)] border border-[var(--hairline)] flex items-center justify-center text-[var(--text-2)] hover:text-amber-400 hover:border-amber-500/40 transition-all tap-feedback shadow-sm"
+              aria-label="Shopping & Grocery List"
+              title="Smart Shopping & Grocery Checklist"
+            >
+              <ShoppingCart className="w-4 h-4 text-amber-400" />
+            </button>
+
+            {/* Islamic Zakat & Charity Desk */}
+            <button
+              type="button"
+              onClick={() => setIsZakatModalOpen(true)}
+              className="w-11 h-11 rounded-2xl bg-[var(--surface)] border border-[var(--hairline)] flex items-center justify-center text-[var(--text-2)] hover:text-emerald-400 hover:border-emerald-500/40 transition-all tap-feedback shadow-sm"
+              aria-label="Zakat & Charity Desk"
+              title="Islamic Zakat al-Mal & Sadaqah Desk"
+            >
+              <MoonStar className="w-4 h-4 text-emerald-400" />
+            </button>
+
+            {/* Net Worth & Emergency Runway Desk */}
+            <button
+              type="button"
+              onClick={() => setIsNetWorthModalOpen(true)}
+              className="w-11 h-11 rounded-2xl bg-[var(--surface)] border border-[var(--hairline)] flex items-center justify-center text-[var(--text-2)] hover:text-cyan-400 hover:border-cyan-500/40 transition-all tap-feedback shadow-sm"
+              aria-label="Net Worth & Runway Desk"
+              title="Net Worth & Emergency Fund Runway Desk"
+            >
+              <Landmark className="w-4 h-4 text-cyan-400" />
             </button>
           </div>
         </div>
@@ -1369,7 +1452,18 @@ export const FinanceScreen: React.FC<FinanceScreenProps> = ({ onRefresh }) => {
                   </button>
                 ))}
               </div>
-              <button
+              <div className="flex items-center gap-1.5 shrink-0">
+                <button
+                  type="button"
+                  onClick={() => setIsRecurringModalOpen(true)}
+                  className="px-3 py-1.5 rounded-full text-xs font-semibold bg-[var(--surface)] text-[var(--text-2)] hover:text-cyan-400 border border-[var(--hairline)] hover:border-cyan-500/30 flex items-center gap-1.5 transition-colors shadow-sm"
+                  title="Manage Subscriptions & Recurring Bills"
+                >
+                  <RotateCcw className="w-3.5 h-3.5 text-cyan-400" />
+                  <span className="hidden sm:inline">Bills &</span>
+                  <span>Subscriptions</span>
+                </button>
+                <button
                 type="button"
                 onClick={handleExportCSV}
                 className="px-3 py-1.5 rounded-full text-xs font-semibold bg-[var(--surface)] text-[var(--text-2)] hover:text-cyan-400 border border-[var(--hairline)] hover:border-cyan-500/30 flex items-center gap-1.5 transition-colors shrink-0 shadow-sm"
@@ -1378,7 +1472,8 @@ export const FinanceScreen: React.FC<FinanceScreenProps> = ({ onRefresh }) => {
                 <Download className="w-3.5 h-3.5 text-cyan-400" />
                 <span className="hidden sm:inline">Export</span>
                 <span>CSV</span>
-              </button>
+                </button>
+              </div>
             </div>
           </div>
 
@@ -2607,6 +2702,70 @@ export const FinanceScreen: React.FC<FinanceScreenProps> = ({ onRefresh }) => {
         cycles={availableCycles}
         selectedOffset={cycleOffset}
         onSelectCycle={(offset) => setCycleOffset(offset)}
+      />
+      {/* Recurring Subscriptions & Bills Modal */}
+      <RecurringSubscriptionsModal
+        isOpen={isRecurringModalOpen}
+        onClose={() => setIsRecurringModalOpen(false)}
+        onRefresh={onRefresh}
+        onShowToast={triggerToast}
+      />
+
+      {/* Quick Purchase Affordability Simulator Modal */}
+      <AffordabilityCalculatorModal
+        isOpen={isAffordabilityModalOpen}
+        onClose={() => setIsAffordabilityModalOpen(false)}
+        onRecordExpense={(name, amount) => {
+          const tx: Transaction = {
+            id: generateUUID(),
+            type: 'expense',
+            amount_minor: Math.round(amount * 100),
+            local_date: today,
+            category_id: state.categories[0]?.id || 'cat-1',
+            note: name || 'Simulated Purchase',
+            created_at: Date.now(),
+            updated_at: Date.now(),
+            deleted_at: null,
+          };
+          db.updateState(s => {
+            s.transactions.unshift(tx);
+          });
+          triggerToast(`✓ Recorded expense "${name}": ${amount.toLocaleString()} ${state.settings.currency_label || 'DA'}`);
+          onRefresh();
+        }}
+      />
+
+      {/* Currency & FX Converter Modal */}
+      <CurrencyConverterModal
+        isOpen={isCurrencyModalOpen}
+        onClose={() => setIsCurrencyModalOpen(false)}
+        onRefresh={onRefresh}
+        onToast={triggerToast}
+        currencyLabel={state.settings.currency_label || 'DA'}
+      />
+
+      {/* Smart Shopping & Grocery Checklist Modal */}
+      <ShoppingListModal
+        isOpen={isShoppingListOpen}
+        onClose={() => setIsShoppingListOpen(false)}
+        onRefresh={onRefresh}
+        onShowToast={triggerToast}
+      />
+
+      {/* Islamic Zakat & Charity Desk Modal */}
+      <ZakatCalculatorModal
+        isOpen={isZakatModalOpen}
+        onClose={() => setIsZakatModalOpen(false)}
+        onRefresh={onRefresh}
+        onShowToast={triggerToast}
+      />
+
+      {/* Net Worth & Emergency Runway Desk Modal */}
+      <NetWorthModal
+        isOpen={isNetWorthModalOpen}
+        onClose={() => setIsNetWorthModalOpen(false)}
+        onRefresh={onRefresh}
+        onShowToast={triggerToast}
       />
     </div>
   );

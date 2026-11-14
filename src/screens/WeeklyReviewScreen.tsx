@@ -18,7 +18,8 @@ import {
   Layers,
   FileText,
   LayoutGrid,
-  ListTodo
+  ListTodo,
+  Download
 } from 'lucide-react';
 import { formatCurrency, db, getTodayLocalDate } from '../services/storage';
 import { 
@@ -48,6 +49,7 @@ interface WeeklyReviewScreenProps {
 }
 
 export const WeeklyReviewScreen: React.FC<WeeklyReviewScreenProps> = ({ onBack, onRefresh }) => {
+  const state = db.getState();
   // 0 = Current week, 1 = Previous week
   const [selectedWeekOffset, setSelectedWeekOffset] = useState<number>(1);
   const [metrics, setMetrics] = useState<WeeklyReviewMetrics>(WeeklyReviewService.getWeeklyMetrics(1));
@@ -298,6 +300,65 @@ export const WeeklyReviewScreen: React.FC<WeeklyReviewScreenProps> = ({ onBack, 
   };
 
   const dayLabels = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
+  const handleExportWeeklyReport = () => {
+    const currency = state.settings.currency_label || 'DA';
+    const lines = [
+      `# 📊 Weekly Review Report — ${metrics.label}`,
+      `Period: ${metrics.startDate} to ${metrics.endDate} (${metrics.weekId})`,
+      `Generated: ${getTodayLocalDate()}`,
+      '',
+      '## 💰 Financial Discipline & Runway',
+      `- Total Expense: ${formatCurrency(metrics.finance.totalExpenseMinor, currency)}`,
+      `- Total Income: ${formatCurrency(metrics.finance.totalIncomeMinor, currency)}`,
+      `- Savings Deposited: ${formatCurrency(metrics.finance.savingsDepositedMinor, currency)}`,
+      `- Money Lent: ${formatCurrency(metrics.finance.moneyLentMinor, currency)}`,
+      comparison ? `- Delta vs Prior Week: ${formatCurrency(comparison.totalExpenseDeltaMinor, currency)}` : '',
+      '',
+      '## 🏋️ Physical Training & Body',
+      `- Completed Workouts: ${metrics.fitness.workoutCount} session(s)`,
+      `- Total Volume: ${metrics.fitness.totalVolumeKg.toLocaleString()} kg`,
+      metrics.fitness.avgBodyweightKg ? `- Average Bodyweight: ${metrics.fitness.avgBodyweightKg.toFixed(1)} kg` : '',
+      metrics.fitness.bodyweightChangeKg !== null ? `- Weekly Weight Delta: ${metrics.fitness.bodyweightChangeKg > 0 ? '+' : ''}${metrics.fitness.bodyweightChangeKg.toFixed(1)} kg` : '',
+      '',
+      '## 🕌 Prayers & Spiritual Discipline',
+      `- Obligatory Prayers Completed: ${metrics.prayers.completedCount} of ${metrics.prayers.totalPossible} (${metrics.prayers.completionPercentage.toFixed(0)}%)`,
+      '',
+      '## 📋 Tasks & Execution',
+      `- Tasks Completed: ${metrics.tasks.completedCount} of ${metrics.tasks.totalCreated} (${metrics.tasks.completionRate.toFixed(0)}%)`,
+      metrics.tasks.overdueCount > 0 ? `- Overdue Tasks: ${metrics.tasks.overdueCount}` : '',
+      '',
+      '## 📝 Executive Reflections',
+      '### What Went Well:',
+      whatWentWell.trim() || '*(No reflection entered)*',
+      '',
+      '### What to Improve:',
+      whatToImprove.trim() || '*(No notes entered)*',
+      '',
+      '### Top Priority:',
+      topPriority.trim() || '*(None specified)*',
+      '',
+      '## 🎯 Next Week Strategy & Target Days',
+      `- Scheduled Workout Days: ${selectedWorkoutDays.map(d => dayLabels[d]).join(', ') || 'None'}`,
+      `- Priority 1: ${planPriorities[0] || '—'}`,
+      `- Priority 2: ${planPriorities[1] || '—'}`,
+      `- Priority 3: ${planPriorities[2] || '—'}`,
+      '',
+      '---',
+      '*Exported from GreenDream Personal Intelligence Desk*'
+    ].filter(Boolean);
+
+    const blob = new Blob([lines.join('\n')], { type: 'text/markdown;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `weekly_review_${metrics.weekId}.md`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    triggerToast(`✓ Exported ${metrics.weekId} report to Markdown`);
+  };
   const activeWidgets = isEditMode ? draftWidgets : layout.widgets.filter(w => w.visible);
 
   return (
@@ -323,13 +384,25 @@ export const WeeklyReviewScreen: React.FC<WeeklyReviewScreenProps> = ({ onBack, 
           onOpenPresets={() => setIsPresetModalOpen(true)}
           onResetDefault={handleResetDefault}
           actionsRight={
-            <button
-              onClick={onBack}
-              className="p-2 rounded-xl bg-[var(--color-surface)] border border-[var(--color-border)] text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] text-xs font-semibold flex items-center gap-1 min-h-[44px]"
-            >
-              <ArrowLeft className="w-3.5 h-3.5 rtl:rotate-180" />
-              <span>Back</span>
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={handleExportWeeklyReport}
+                className="px-3 py-2 rounded-xl bg-[var(--color-surface)] border border-[var(--color-border)] hover:border-cyan-500/40 text-[var(--color-text-secondary)] hover:text-cyan-400 text-xs font-semibold flex items-center gap-1.5 min-h-[44px] transition-colors tap-feedback"
+                title="Export weekly summary report to Markdown"
+              >
+                <Download className="w-3.5 h-3.5 text-cyan-400" />
+                <span className="hidden sm:inline">Export</span>
+                <span>.MD</span>
+              </button>
+              <button
+                onClick={onBack}
+                className="p-2 rounded-xl bg-[var(--color-surface)] border border-[var(--color-border)] text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] text-xs font-semibold flex items-center gap-1 min-h-[44px]"
+              >
+                <ArrowLeft className="w-3.5 h-3.5 rtl:rotate-180" />
+                <span>Back</span>
+              </button>
+            </div>
           }
         />
       </div>

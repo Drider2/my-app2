@@ -5,3 +5,8 @@ export * from './ActivityHeatmapCard';
 export * from './LastSessionCard';
 export * from './GymWidgetRenderer';
 export * from './OneRepMaxModal';
+export * from './RestTimerModal';
+export * from './ExerciseCatalogView';
+export * from './PersonalRecordsModal';
+export * from './MuscleVolumeModal';
+export * from './MacroTargetModal';

@@ -1,0 +1,949 @@
+{
+  "version": 1,
+  "settings": {
+    "user_name": "",
+    "currency_label": "DA",
+    "weight_unit": "kg",
+    "budget_cycle_start_day": 1,
+    "week_start_day": 1,
+    "quiet_hours_start": "22:00",
+    "quiet_hours_end": "08:00",
+    "daily_notice_cap": 3,
+    "journal_lock_enabled": false,
+    "theme": "dark",
+    "language": "en",
+    "accent": "cyan",
+    "font_size_scale": 1,
+    "ai": {
+      "provider": "gemini",
+      "api_key_configured": true,
+      "api_key_masked": "••••••••••••••••MmTg",
+      "api_key": "AQ.Ab8RN6IDDgyk3z3ds_ykETLaBuE1_yOVABwhF5V-6JUOLzMmTg",
+      "model": "gemini-3.6-flash",
+      "backend_url": "",
+      "direct_mode": true,
+      "connection_status": "connected",
+      "connection_error": null,
+      "last_tested_at": 1794635657120,
+      "response_length": "balanced",
+      "permissions": {
+        "finance_read": true,
+        "gym_read": true,
+        "tasks_read": true,
+        "prayers_read": true,
+        "maintenance_read": true
+      },
+      "usage": {
+        "total_requests": 0,
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "rate_limit_errors": 0,
+        "today_requests": 0,
+        "today_date": "2026-11-14",
+        "free_tier_status": "active"
+      }
+    },
+    "voice": {
+      "enabled": true,
+      "language": "auto",
+      "voiceURI": "",
+      "voiceName": "",
+      "speechRate": 1,
+      "speechPitch": 1,
+      "readRepliesAloud": false,
+      "handsFreeMode": false,
+      "handsFreeSilenceSeconds": 1.2,
+      "highQualityVoice": false,
+      "alwaysVoiceReplyToVoice": true,
+      "voiceMessagesVolume": 1
+    },
+    "flame": {
+      "enabled": true,
+      "startDate": "2026-11-14",
+      "relapses": [],
+      "goalDays": 30,
+      "showNumber": true,
+      "celebrations": {
+        "streakKey": "2026-11-14",
+        "done": [],
+        "lastSeenDay": "2026-11-14"
+      },
+      "phraseHistory": [],
+      "savedPhrases": [],
+      "shareWithHermes": false,
+      "showTenDayWords": true
+    },
+    "onboarded": true,
+    "modules": {
+      "prayer": true,
+      "finance": true,
+      "gym": true,
+      "calendar": true,
+      "journal": true,
+      "maintenance": true,
+      "weekly_review": true,
+      "assistant": true,
+      "flame": true
+    },
+    "show_customize_banner": false,
+    "display_mode": "auto"
+  },
+  "habits": [],
+  "habitSchedules": [],
+  "habitEntries": [],
+  "exercises": [
+    {
+      "id": "ex-1",
+      "name": "Barbell Bench Press",
+      "category": "chest",
+      "muscles": [
+        {
+          "muscle_id": "chest",
+          "role": "primary",
+          "weight": 1
+        },
+        {
+          "muscle_id": "triceps",
+          "role": "secondary",
+          "weight": 0.5
+        },
+        {
+          "muscle_id": "front_delts",
+          "role": "secondary",
+          "weight": 0.5
+        }
+      ],
+      "created_at": 1794635657120,
+      "updated_at": 1794635657120,
+      "deleted_at": null
+    },
+    {
+      "id": "ex-2",
+      "name": "Overhead Barbell Press",
+      "category": "shoulders",
+      "muscles": [
+        {
+          "muscle_id": "shoulders",
+          "role": "primary",
+          "weight": 1
+        },
+        {
+          "muscle_id": "triceps",
+          "role": "secondary",
+          "weight": 0.5
+        }
+      ],
+      "created_at": 1794635657120,
+      "updated_at": 1794635657120,
+      "deleted_at": null
+    },
+    {
+      "id": "ex-3",
+      "name": "Barbell Squat",
+      "category": "legs",
+      "muscles": [
+        {
+          "muscle_id": "quads",
+          "role": "primary",
+          "weight": 1
+        },
+        {
+          "muscle_id": "glutes",
+          "role": "primary",
+          "weight": 1
+        },
+        {
+          "muscle_id": "lower_back",
+          "role": "secondary",
+          "weight": 0.5
+        }
+      ],
+      "created_at": 1794635657120,
+      "updated_at": 1794635657120,
+      "deleted_at": null
+    },
+    {
+      "id": "ex-4",
+      "name": "Lat Pulldown / Pull-ups",
+      "category": "back",
+      "muscles": [
+        {
+          "muscle_id": "lats",
+          "role": "primary",
+          "weight": 1
+        },
+        {
+          "muscle_id": "biceps",
+          "role": "secondary",
+          "weight": 0.5
+        }
+      ],
+      "created_at": 1794635657120,
+      "updated_at": 1794635657120,
+      "deleted_at": null
+    }
+  ],
+  "workoutPlans": [],
+  "workoutSessions": [],
+  "trainingPrograms": [],
+  "activeProgramId": "",
+  "bodyweightEntries": [],
+  "events": [],
+  "tasks": [],
+  "categories": [
+    {
+      "id": "cat-food",
+      "name": "Food & Dining",
+      "icon": "Utensils",
+      "amount_minor": 2500000,
+      "rollover": "reset",
+      "alert_threshold": 0.8,
+      "color": "#F59E0B",
+      "created_at": 1794635657122,
+      "updated_at": 1794635657122,
+      "deleted_at": null
+    },
+    {
+      "id": "cat-transport",
+      "name": "Transport & Commute",
+      "icon": "Car",
+      "amount_minor": 500000,
+      "rollover": "reset",
+      "alert_threshold": 0.8,
+      "color": "#3B82F6",
+      "created_at": 1794635657122,
+      "updated_at": 1794635657122,
+      "deleted_at": null
+    },
+    {
+      "id": "cat-cafe",
+      "name": "Café & Social",
+      "icon": "Coffee",
+      "amount_minor": 400000,
+      "rollover": "reset",
+      "alert_threshold": 0.8,
+      "color": "#EC4899",
+      "created_at": 1794635657122,
+      "updated_at": 1794635657122,
+      "deleted_at": null
+    },
+    {
+      "id": "cat-shopping",
+      "name": "Shopping & Gear",
+      "icon": "ShoppingBag",
+      "amount_minor": 800000,
+      "rollover": "reset",
+      "alert_threshold": 0.8,
+      "color": "#8B5CF6",
+      "created_at": 1794635657122,
+      "updated_at": 1794635657122,
+      "deleted_at": null
+    },
+    {
+      "id": "cat-personal",
+      "name": "Personal Care",
+      "icon": "Scissors",
+      "amount_minor": 300000,
+      "rollover": "reset",
+      "alert_threshold": 0.8,
+      "color": "#10B981",
+      "created_at": 1794635657122,
+      "updated_at": 1794635657122,
+      "deleted_at": null
+    },
+    {
+      "id": "cat-car",
+      "name": "Car Maintenance",
+      "icon": "Wrench",
+      "amount_minor": 600000,
+      "rollover": "reset",
+      "alert_threshold": 0.8,
+      "color": "#F97316",
+      "created_at": 1794635657122,
+      "updated_at": 1794635657122,
+      "deleted_at": null
+    },
+    {
+      "id": "cat-bills",
+      "name": "Bills & Utilities",
+      "icon": "Zap",
+      "amount_minor": 1000000,
+      "rollover": "reset",
+      "alert_threshold": 0.8,
+      "color": "#6366F1",
+      "created_at": 1794635657122,
+      "updated_at": 1794635657122,
+      "deleted_at": null
+    },
+    {
+      "id": "cat-entertainment",
+      "name": "Entertainment",
+      "icon": "Film",
+      "amount_minor": 500000,
+      "rollover": "reset",
+      "alert_threshold": 0.8,
+      "color": "#14B8A6",
+      "created_at": 1794635657122,
+      "updated_at": 1794635657122,
+      "deleted_at": null
+    },
+    {
+      "id": "cat-gym",
+      "name": "Health & Gym",
+      "icon": "HeartPulse",
+      "amount_minor": 600000,
+      "rollover": "reset",
+      "alert_threshold": 0.8,
+      "color": "#A6D96A",
+      "created_at": 1794635657122,
+      "updated_at": 1794635657122,
+      "deleted_at": null
+    },
+    {
+      "id": "cat-sadaqah",
+      "name": "Sadaqah & Charity",
+      "icon": "HeartHandshake",
+      "amount_minor": 250000,
+      "rollover": "reset",
+      "alert_threshold": 0.9,
+      "color": "#38BDF8",
+      "created_at": 1794635657122,
+      "updated_at": 1794635657122,
+      "deleted_at": null
+    }
+  ],
+  "transactions": [
+    {
+      "id": "tx-audit-1794636228063",
+      "type": "expense",
+      "amount_minor": 350000,
+      "local_date": "2026-11-14",
+      "category_id": "cat-food",
+      "note": "Fresh Organic Groceries 1794636228063",
+      "created_at": 1794636228064,
+      "updated_at": 1794636228064,
+      "deleted_at": null
+    }
+  ],
+  "savingsGoals": [],
+  "salarySetting": {
+    "monthly_salary_minor": 0,
+    "payment_day": 1,
+    "effective_from": "2026-11-14",
+    "history": []
+  },
+  "savingsAccount": {
+    "current_balance_minor": 0,
+    "starting_balance_minor": 0,
+    "starting_date": "2026-11-14",
+    "notes": "Clean Slate Savings"
+  },
+  "savingsTransactions": [],
+  "salaryAllocation": {
+    "savings_amount_minor": 0,
+    "personal_amount_minor": 0,
+    "car_amount_minor": 0,
+    "gym_amount_minor": 0,
+    "shopping_amount_minor": 0,
+    "other_amount_minor": 0,
+    "updated_at": 1794635657121
+  },
+  "recurringRules": [],
+  "journalEntries": [],
+  "assistantProposals": [],
+  "assistantNotices": [
+    {
+      "id": "4cd0f4f1-2446-42f0-a2df-119d7c244abc",
+      "rule_id": "maintenance_due",
+      "title": "Maintenance Due: Cotton Underwear & Socks Pack",
+      "message": "Cotton Underwear & Socks Pack was scheduled for 2026-11-14.",
+      "severity": "high",
+      "status": "new",
+      "related_ids": [
+        "maint-6"
+      ],
+      "options": [
+        {
+          "label": "Mark Done",
+          "action_type": "complete_maintenance",
+          "payload": {
+            "item_id": "maint-6"
+          }
+        },
+        {
+          "label": "Dismiss",
+          "action_type": "dismiss_notice"
+        }
+      ],
+      "created_at": 1794636006002,
+      "updated_at": 1794636006002,
+      "deleted_at": null
+    },
+    {
+      "id": "a7628659-d199-41db-9669-eae52f7fce47",
+      "rule_id": "maintenance_due",
+      "title": "Maintenance Due: Shampoo & Conditioner Refill",
+      "message": "Shampoo & Conditioner Refill was scheduled for 2026-11-08.",
+      "severity": "medium",
+      "status": "new",
+      "related_ids": [
+        "maint-2"
+      ],
+      "options": [
+        {
+          "label": "Mark Done",
+          "action_type": "complete_maintenance",
+          "payload": {
+            "item_id": "maint-2"
+          }
+        },
+        {
+          "label": "Dismiss",
+          "action_type": "dismiss_notice"
+        }
+      ],
+      "created_at": 1794636006002,
+      "updated_at": 1794636006002,
+      "deleted_at": null
+    },
+    {
+      "id": "a218e7cd-4423-4610-bdb5-14e5dcd2a81a",
+      "rule_id": "maintenance_due",
+      "title": "Maintenance Due: Haircut & Beard Trim",
+      "message": "Haircut & Beard Trim was scheduled for 2026-11-14.",
+      "severity": "high",
+      "status": "new",
+      "related_ids": [
+        "maint-1"
+      ],
+      "options": [
+        {
+          "label": "Mark Done",
+          "action_type": "complete_maintenance",
+          "payload": {
+            "item_id": "maint-1"
+          }
+        },
+        {
+          "label": "Dismiss",
+          "action_type": "dismiss_notice"
+        }
+      ],
+      "created_at": 1794636006002,
+      "updated_at": 1794636006002,
+      "deleted_at": null
+    }
+  ],
+  "assistantMessages": [],
+  "prayers": [
+    {
+      "id": "pr-1",
+      "prayer": "fajr",
+      "completed": false,
+      "completed_at": null,
+      "local_date": "2026-11-14",
+      "created_at": 1794635657121,
+      "updated_at": 1794635657121,
+      "deleted_at": null
+    },
+    {
+      "id": "pr-2",
+      "prayer": "dhuhr",
+      "completed": false,
+      "completed_at": null,
+      "local_date": "2026-11-14",
+      "created_at": 1794635657121,
+      "updated_at": 1794635657121,
+      "deleted_at": null
+    },
+    {
+      "id": "pr-3",
+      "prayer": "asr",
+      "completed": false,
+      "completed_at": null,
+      "local_date": "2026-11-14",
+      "created_at": 1794635657121,
+      "updated_at": 1794635657121,
+      "deleted_at": null
+    },
+    {
+      "id": "pr-4",
+      "prayer": "maghrib",
+      "completed": false,
+      "completed_at": null,
+      "local_date": "2026-11-14",
+      "created_at": 1794635657121,
+      "updated_at": 1794635657121,
+      "deleted_at": null
+    },
+    {
+      "id": "pr-5",
+      "prayer": "isha",
+      "completed": false,
+      "completed_at": null,
+      "local_date": "2026-11-14",
+      "created_at": 1794635657121,
+      "updated_at": 1794635657121,
+      "deleted_at": null
+    }
+  ],
+  "prayerSettings": {
+    "location_name": "Algiers, Algeria",
+    "calculation_method": "Algerian Ministry of Religious Affairs",
+    "times": {
+      "fajr": "05:32",
+      "dhuhr": "12:35",
+      "asr": "15:42",
+      "maghrib": "17:55",
+      "isha": "19:18"
+    },
+    "reminders": {
+      "fajr": true,
+      "dhuhr": true,
+      "asr": true,
+      "maghrib": true,
+      "isha": true
+    }
+  },
+  "maintenanceItems": [
+    {
+      "id": "maint-1",
+      "name": "Haircut & Beard Trim",
+      "category": "personal_care",
+      "estimated_cost_minor": 60000,
+      "actual_cost_minor": 60000,
+      "recurrence_type": "days",
+      "recurrence_interval": 10,
+      "last_service_date": "2026-11-04",
+      "next_reminder_date": "2026-11-14",
+      "priority": "high",
+      "status": "due",
+      "notes": "Fade haircut and beard line at Barber Studio",
+      "finance_category_id": "cat-personal",
+      "created_at": 1794636005570,
+      "updated_at": 1794636005997,
+      "deleted_at": null
+    },
+    {
+      "id": "maint-2",
+      "name": "Shampoo & Conditioner Refill",
+      "category": "personal_care",
+      "estimated_cost_minor": 85000,
+      "recurrence_type": "days",
+      "recurrence_interval": 45,
+      "last_service_date": "2026-09-24",
+      "next_reminder_date": "2026-11-08",
+      "priority": "medium",
+      "status": "due",
+      "notes": "Sulfate-free keratin formula",
+      "finance_category_id": "cat-personal",
+      "created_at": 1794636005570,
+      "updated_at": 1794636005997,
+      "deleted_at": null
+    },
+    {
+      "id": "maint-3",
+      "name": "Toothbrush Replacement",
+      "category": "personal_care",
+      "estimated_cost_minor": 25000,
+      "recurrence_type": "months",
+      "recurrence_interval": 3,
+      "last_service_date": "2026-09-01",
+      "next_reminder_date": "2026-12-01",
+      "priority": "low",
+      "status": "upcoming",
+      "notes": "Soft bristles, hygienic switch",
+      "finance_category_id": "cat-personal",
+      "created_at": 1794636005570,
+      "updated_at": 1794636005570,
+      "deleted_at": null
+    },
+    {
+      "id": "maint-4",
+      "name": "Engine Oil & Filter Change",
+      "category": "car_maintenance",
+      "estimated_cost_minor": 500000,
+      "actual_cost_minor": 500000,
+      "recurrence_type": "days",
+      "recurrence_interval": 90,
+      "last_service_date": "2026-11-04",
+      "next_reminder_date": "2027-02-04",
+      "current_odometer_km": 142500,
+      "next_reminder_mileage_km": 150000,
+      "priority": "high",
+      "status": "upcoming",
+      "notes": "5W-40 Synthetic + OEM oil filter",
+      "finance_category_id": "cat-car",
+      "created_at": 1794636005570,
+      "updated_at": 1794636005570,
+      "deleted_at": null
+    },
+    {
+      "id": "maint-5",
+      "name": "Brake Pads Check",
+      "category": "car_maintenance",
+      "estimated_cost_minor": 350000,
+      "recurrence_type": "months",
+      "recurrence_interval": 6,
+      "last_service_date": "2026-06-15",
+      "next_reminder_date": "2026-12-15",
+      "priority": "medium",
+      "status": "upcoming",
+      "notes": "Front ceramic pads wear inspection",
+      "finance_category_id": "cat-car",
+      "created_at": 1794636005570,
+      "updated_at": 1794636005570,
+      "deleted_at": null
+    },
+    {
+      "id": "maint-6",
+      "name": "Cotton Underwear & Socks Pack",
+      "category": "shopping",
+      "estimated_cost_minor": 250000,
+      "recurrence_type": "as_needed",
+      "next_reminder_date": "2026-11-14",
+      "priority": "high",
+      "status": "due",
+      "is_purchased": false,
+      "notes": "Pure breathable cotton trunks and training socks",
+      "finance_category_id": "cat-personal",
+      "created_at": 1794636005570,
+      "updated_at": 1794636005997,
+      "deleted_at": null
+    },
+    {
+      "id": "maint-7",
+      "name": "Whey Protein Isolate (2kg)",
+      "category": "shopping",
+      "estimated_cost_minor": 620000,
+      "recurrence_type": "days",
+      "recurrence_interval": 30,
+      "last_service_date": "2026-10-18",
+      "next_reminder_date": "2026-11-18",
+      "priority": "high",
+      "status": "upcoming",
+      "notes": "Gym nutrition recovery",
+      "finance_category_id": "cat-gym",
+      "created_at": 1794636005570,
+      "updated_at": 1794636005570,
+      "deleted_at": null
+    },
+    {
+      "id": "maint-8",
+      "name": "Training Running Shoes",
+      "category": "shopping",
+      "estimated_cost_minor": 1400000,
+      "recurrence_type": "as_needed",
+      "next_reminder_date": "2026-11-25",
+      "priority": "medium",
+      "status": "upcoming",
+      "is_purchased": false,
+      "notes": "Road running and treadmill cushioning",
+      "finance_category_id": "cat-personal",
+      "created_at": 1794636005570,
+      "updated_at": 1794636005570,
+      "deleted_at": null
+    }
+  ],
+  "quickExpenseShortcuts": [],
+  "loans": [],
+  "weeklyReflections": [],
+  "weeklyPlans": [],
+  "dashboardLayout": {
+    "version": 1,
+    "preset": "complete_overview",
+    "widgets": [
+      {
+        "id": "widget-daily_progress-0",
+        "widgetType": "daily_progress",
+        "size": "full",
+        "visible": true,
+        "order": 0
+      },
+      {
+        "id": "widget-finance_quick_expenses-1",
+        "widgetType": "finance_quick_expenses",
+        "size": "full",
+        "visible": true,
+        "order": 1
+      },
+      {
+        "id": "widget-finance_balance-2",
+        "widgetType": "finance_balance",
+        "size": "small",
+        "visible": true,
+        "order": 2
+      },
+      {
+        "id": "widget-finance_income-3",
+        "widgetType": "finance_income",
+        "size": "small",
+        "visible": true,
+        "order": 3
+      },
+      {
+        "id": "widget-finance_expenses-4",
+        "widgetType": "finance_expenses",
+        "size": "small",
+        "visible": true,
+        "order": 4
+      },
+      {
+        "id": "widget-finance_savings-5",
+        "widgetType": "finance_savings",
+        "size": "small",
+        "visible": true,
+        "order": 5
+      },
+      {
+        "id": "widget-finance_forecast-6",
+        "widgetType": "finance_forecast",
+        "size": "full",
+        "visible": true,
+        "order": 6
+      },
+      {
+        "id": "widget-tasks_today-7",
+        "widgetType": "tasks_today",
+        "size": "full",
+        "visible": true,
+        "order": 7
+      },
+      {
+        "id": "widget-calendar_events-8",
+        "widgetType": "calendar_events",
+        "size": "medium",
+        "visible": true,
+        "order": 8
+      },
+      {
+        "id": "widget-daily_prayers-9",
+        "widgetType": "daily_prayers",
+        "size": "full",
+        "visible": true,
+        "order": 9
+      },
+      {
+        "id": "widget-ai_daily_brief-10",
+        "widgetType": "ai_daily_brief",
+        "size": "full",
+        "visible": true,
+        "order": 10
+      },
+      {
+        "id": "widget-gym_today_workout-11",
+        "widgetType": "gym_today_workout",
+        "size": "medium",
+        "visible": true,
+        "order": 11
+      },
+      {
+        "id": "widget-gym_workout_stats-12",
+        "widgetType": "gym_workout_stats",
+        "size": "small",
+        "visible": true,
+        "order": 12
+      },
+      {
+        "id": "widget-gym_body_weight-13",
+        "widgetType": "gym_body_weight",
+        "size": "small",
+        "visible": true,
+        "order": 13
+      },
+      {
+        "id": "widget-personal_maintenance-14",
+        "widgetType": "personal_maintenance",
+        "size": "full",
+        "visible": true,
+        "order": 14
+      },
+      {
+        "id": "widget-shopping_reminders-15",
+        "widgetType": "shopping_reminders",
+        "size": "full",
+        "visible": true,
+        "order": 15
+      },
+      {
+        "id": "widget-weekly_review-16",
+        "widgetType": "weekly_review",
+        "size": "full",
+        "visible": true,
+        "order": 16
+      }
+    ],
+    "updated_at": 1794635657122
+  },
+  "moduleLayouts": {
+    "finance": {
+      "moduleId": "finance",
+      "version": 1,
+      "preset": "complete_finance",
+      "widgets": [
+        {
+          "id": "mod-finance-finance_balance-0",
+          "widgetType": "finance_balance",
+          "size": "small",
+          "visible": true,
+          "order": 0
+        },
+        {
+          "id": "mod-finance-finance_income-1",
+          "widgetType": "finance_income",
+          "size": "small",
+          "visible": true,
+          "order": 1
+        },
+        {
+          "id": "mod-finance-finance_expenses-2",
+          "widgetType": "finance_expenses",
+          "size": "small",
+          "visible": true,
+          "order": 2
+        },
+        {
+          "id": "mod-finance-finance_sadaqah-3",
+          "widgetType": "finance_sadaqah",
+          "size": "small",
+          "visible": true,
+          "order": 3
+        },
+        {
+          "id": "mod-finance-finance_forecast-4",
+          "widgetType": "finance_forecast",
+          "size": "full",
+          "visible": true,
+          "order": 4
+        },
+        {
+          "id": "mod-finance-finance_savings-5",
+          "widgetType": "finance_savings",
+          "size": "medium",
+          "visible": true,
+          "order": 5
+        },
+        {
+          "id": "mod-finance-finance_quick_expenses-6",
+          "widgetType": "finance_quick_expenses",
+          "size": "full",
+          "visible": true,
+          "order": 6
+        },
+        {
+          "id": "mod-finance-finance_budget-7",
+          "widgetType": "finance_budget",
+          "size": "medium",
+          "visible": true,
+          "order": 7
+        },
+        {
+          "id": "mod-finance-finance_category_spending-8",
+          "widgetType": "finance_category_spending",
+          "size": "medium",
+          "visible": true,
+          "order": 8
+        },
+        {
+          "id": "mod-finance-finance_savings_goals-9",
+          "widgetType": "finance_savings_goals",
+          "size": "full",
+          "visible": true,
+          "order": 9
+        },
+        {
+          "id": "mod-finance-finance_allocation-10",
+          "widgetType": "finance_allocation",
+          "size": "full",
+          "visible": true,
+          "order": 10
+        },
+        {
+          "id": "mod-finance-finance_money_lent-11",
+          "widgetType": "finance_money_lent",
+          "size": "medium",
+          "visible": true,
+          "order": 11
+        },
+        {
+          "id": "mod-finance-finance_affordability-12",
+          "widgetType": "finance_affordability",
+          "size": "medium",
+          "visible": true,
+          "order": 12
+        },
+        {
+          "id": "mod-finance-finance_transactions-13",
+          "widgetType": "finance_transactions",
+          "size": "full",
+          "visible": true,
+          "order": 13
+        }
+      ],
+      "updated_at": 1794650396209
+    },
+    "prayers": {
+      "moduleId": "prayers",
+      "version": 1,
+      "preset": "complete_spiritual",
+      "widgets": [
+        {
+          "id": "mod-prayers-prayers_daily_times-0",
+          "widgetType": "prayers_daily_times",
+          "size": "full",
+          "visible": true,
+          "order": 0
+        },
+        {
+          "id": "mod-prayers-prayers_progress_indicator-1",
+          "widgetType": "prayers_progress_indicator",
+          "size": "full",
+          "visible": true,
+          "order": 1
+        },
+        {
+          "id": "mod-prayers-prayers_weekly_overview-2",
+          "widgetType": "prayers_weekly_overview",
+          "size": "medium",
+          "visible": true,
+          "order": 2
+        },
+        {
+          "id": "mod-prayers-prayers_history-3",
+          "widgetType": "prayers_history",
+          "size": "full",
+          "visible": true,
+          "order": 3
+        }
+      ],
+      "updated_at": 1794650396707
+    }
+  },
+  "allocationPlans": [],
+  "sadaqahSettings": {
+    "type": "percentage",
+    "value": 5,
+    "monthly_target_minor": 250000,
+    "basis": "salary_only",
+    "notes": "Dedicated 5% Sadaqah allocation from monthly income"
+  },
+  "disciplineEntries": [],
+  "dailyProgressSettings": {
+    "daily_progress_enabled": true,
+    "prayers_enabled": true,
+    "prayers_weight": 5,
+    "spending_enabled": true,
+    "spending_weight": 2,
+    "daily_spending_allowance_minor": 0,
+    "excluded_category_ids": [],
+    "discipline_enabled": true,
+    "discipline_weight": 3
+  },
+  "shoppingItems": [],
+  "fastingEntries": [],
+  "last_modified": 1794651318536,
+  "hydrationLogs": {},
+  "dailyWaterTargetMl": 2500,
+  "hermesChats": [],
+  "hermesNotes": []
+}

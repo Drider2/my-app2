@@ -4,9 +4,17 @@ import {
   WorkoutPlan, WorkoutSession, Exercise, BodyweightEntry,
   CalendarEvent, Task,
   Transaction, Category, SavingsGoal, RecurringRule,
+  BalanceSheetAsset, BalanceSheetLiability,
   JournalEntry,
   AssistantProposal, AssistantNotice, AssistantMessage,
   MaintenanceItem,
+  FuelLogEntry,
+  ShoppingItem,
+  FastingDayEntry,
+  ActiveFastingSession,
+  SleepEntry,
+  QuranKhatmahState,
+  QuranReadingRecord,
   QuickExpenseShortcut, Loan, LoanRepayment,
   PrayerName, PrayerEntry, PrayerSettings,
   SalarySetting, SalaryHistoryEntry, SavingsAccount, SavingsTransaction, SalaryAllocation,
@@ -16,7 +24,8 @@ import {
   DashboardLayoutState, ModuleLayoutState,
   DisciplineEntry, DailyProgressSettings,
   AppSettings, AIAssistantSettings, UUID, DEFAULT_APP_MODULES,
-  VoiceSettings, DEFAULT_VOICE_SETTINGS
+  VoiceSettings, DEFAULT_VOICE_SETTINGS,
+  HermesChatSession, HermesMemoryNote
 } from '../types';
 
 export function generateUUID(): UUID {
@@ -82,6 +91,19 @@ interface StorageState {
   sadaqahSettings?: SadaqahSettings;
   disciplineEntries: DisciplineEntry[];
   dailyProgressSettings: DailyProgressSettings;
+  hydrationLogs?: Record<string, number>;
+  dailyWaterTargetMl?: number;
+  fuelLogs?: FuelLogEntry[];
+  shoppingItems?: ShoppingItem[];
+  fastingEntries?: FastingDayEntry[];
+  fastingSession?: ActiveFastingSession;
+  sleepEntries?: SleepEntry[];
+  quranKhatmah?: QuranKhatmahState;
+  customAssets?: BalanceSheetAsset[];
+  customLiabilities?: BalanceSheetLiability[];
+  hermesChats?: HermesChatSession[];
+  hermesNotes?: HermesMemoryNote[];
+  last_modified?: number;
 }
 
 const STORAGE_KEY = 'greendream_v1_3_storage';
@@ -185,6 +207,7 @@ const DEFAULT_SETTINGS: AppSettings = {
   language: 'en',
   accent: 'cyan',
   font_size_scale: 1.0,
+  display_mode: 'auto',
   ai: DEFAULT_AI_SETTINGS,
   voice: { ...DEFAULT_VOICE_SETTINGS },
   flame: {
@@ -1224,6 +1247,8 @@ function getSeedData(): StorageState {
       updated_at: now,
     },
     moduleLayouts: {},
+    hermesChats: [],
+    hermesNotes: [],
   };
 }
 
@@ -1342,6 +1367,10 @@ export function getCleanInitialState(): StorageState {
       discipline_enabled: true,
       discipline_weight: 3,
     },
+    shoppingItems: [],
+    fastingEntries: [],
+    hermesChats: [],
+    hermesNotes: [],
   };
 }
 
@@ -1349,18 +1378,69 @@ class LocalStorageDB {
   private state: StorageState;
   private saveTimeout: any = null;
   private isSavePending: boolean = false;
+  private syncStatus: 'idle' | 'saving' | 'saved' | 'error' = 'idle';
+  private syncError: string | null = null;
+  private lastSavedAt: number | null = null;
+  private savedStatusTimeout: any = null;
+  private serverSyncTimeout: any = null;
 
   constructor() {
     this.state = this.loadState();
     if (typeof window !== 'undefined') {
       window.addEventListener('beforeunload', () => this.flushPendingSave());
       window.addEventListener('pagehide', () => this.flushPendingSave());
+
+      // Cross-tab synchronization via storage event
+      window.addEventListener('storage', (e) => {
+        if (e.key === STORAGE_KEY && e.newValue) {
+          try {
+            const remoteState = JSON.parse(e.newValue);
+            if (remoteState && typeof remoteState === 'object' && remoteState.version) {
+              this.state = remoteState;
+              this.notifyListeners();
+            }
+          } catch {}
+        }
+      });
+
+      // Internal sync: re-read state if external writer dispatches update event
+      window.addEventListener('greendream_state_updated', () => {
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY);
+          if (raw) {
+            const parsed = JSON.parse(raw);
+            if (parsed && typeof parsed === 'object' && parsed.version) {
+              this.state = parsed;
+              this.scheduleServerSync();
+            }
+          }
+        } catch {}
+      });
+
+      // Refocus sync: pull latest changes whenever user switches back to tab
+      document.addEventListener('visibilitychange', () => {
+        if (!document.hidden) {
+          this.pullFromServer();
+        }
+      });
+
+      // Initial cloud database sync
+      setTimeout(() => {
+        this.pullFromServer();
+      }, 80);
     }
   }
 
   private loadState(): StorageState {
     try {
-      const raw = localStorage.getItem(STORAGE_KEY);
+      let raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw && typeof localStorage !== 'undefined') {
+        const legacyRaw = localStorage.getItem('greendream_state_v1');
+        if (legacyRaw) {
+          raw = legacyRaw;
+          try { localStorage.setItem(STORAGE_KEY, legacyRaw); } catch {}
+        }
+      }
       if (raw) {
         const parsed = JSON.parse(raw);
         const seed = getSeedData();
@@ -1382,6 +1462,9 @@ class LocalStorageDB {
 
           if (!parsed.settings.theme) {
             parsed.settings.theme = 'dark';
+          }
+          if (!parsed.settings.display_mode || !['auto', 'phone', 'wide', 'tablet'].includes(parsed.settings.display_mode)) {
+            parsed.settings.display_mode = 'auto';
           }
           if (parsed.settings.modules && parsed.settings.modules.flame === undefined) {
             parsed.settings.modules.flame = true;
@@ -1533,8 +1616,26 @@ class LocalStorageDB {
         if (parsed.disciplineEntries === undefined) {
           parsed.disciplineEntries = seed.disciplineEntries;
         }
+        if (parsed.hydrationLogs === undefined) {
+          parsed.hydrationLogs = {};
+        }
+        if (parsed.dailyWaterTargetMl === undefined) {
+          parsed.dailyWaterTargetMl = 2500;
+        }
+        if (parsed.shoppingItems === undefined) {
+          parsed.shoppingItems = [];
+        }
+        if (parsed.fastingEntries === undefined) {
+          parsed.fastingEntries = [];
+        }
         if (parsed.moduleLayouts === undefined) {
           parsed.moduleLayouts = {};
+        }
+        if (parsed.hermesChats === undefined) {
+          parsed.hermesChats = [];
+        }
+        if (parsed.hermesNotes === undefined) {
+          parsed.hermesNotes = [];
         }
         // Ensure goals have status if present
         if (parsed.savingsGoals && Array.isArray(parsed.savingsGoals)) {
@@ -1556,15 +1657,61 @@ class LocalStorageDB {
     return clean;
   }
 
+  public isServerSyncAvailable(): boolean {
+    if (typeof window === 'undefined') return true;
+    if (window.location.hostname.includes('netlify.app')) return false;
+    return true;
+  }
+
+  public resolveServerUrl(): string {
+    if (typeof window === 'undefined') return 'http://localhost:3001';
+    if (window.location.protocol === 'capacitor:' || (window.location.hostname === 'localhost' && window.location.port === '')) {
+      return 'http://10.0.2.2:3001';
+    }
+    return window.location.origin;
+  }
+
+  public getSyncStatus(): { status: 'idle' | 'saving' | 'saved' | 'error'; error: string | null; lastSavedAt: number | null } {
+    return {
+      status: this.syncStatus,
+      error: this.syncError,
+      lastSavedAt: this.lastSavedAt,
+    };
+  }
+
+  public setSyncStatus(status: 'idle' | 'saving' | 'saved' | 'error', errorMessage?: string): void {
+    this.syncStatus = status;
+    this.syncError = errorMessage || null;
+    if (status === 'saved') {
+      this.lastSavedAt = Date.now();
+    }
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('greendream_sync_status', {
+        detail: { status, error: this.syncError, lastSavedAt: this.lastSavedAt }
+      }));
+    }
+  }
+
   public flushPendingSave(): void {
     if (this.saveTimeout) {
       clearTimeout(this.saveTimeout);
       this.saveTimeout = null;
     }
-    if (!this.isSavePending) return;
+    if (this.serverSyncTimeout) {
+      clearTimeout(this.serverSyncTimeout);
+      this.serverSyncTimeout = null;
+    }
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(this.state));
       this.isSavePending = false;
+      // Guaranteed background sync on page close/navigate using sendBeacon
+      if (typeof navigator !== 'undefined' && navigator.sendBeacon) {
+        const serverUrl = this.resolveServerUrl();
+        if (!serverUrl.includes('netlify.app')) {
+          const payload = JSON.stringify({ state: this.state });
+          navigator.sendBeacon(`${serverUrl}/api/state`, payload);
+        }
+      }
     } catch (e) {
       console.error('Failed to save to localStorage', e);
     }
@@ -1616,27 +1763,116 @@ class LocalStorageDB {
 
   public updateState(updater: (draft: StorageState) => void): StorageState {
     updater(this.state);
+    this.state.last_modified = Date.now();
     // 1. Immediate synchronous persistence to localStorage
     this.saveState(this.state, true);
     // 2. Notify all UI subscribers
     this.notifyListeners();
-    // 3. Asynchronously sync to server/backend persistent store
-    this.syncToServer();
+    // 3. Debounced asynchronous sync with visible feedback and automatic retry
+    this.scheduleServerSync();
     return this.state;
   }
 
-  public syncToServer(): void {
-    if (typeof window === 'undefined') return;
+  private scheduleServerSync(): void {
+    this.setSyncStatus('saving');
+    if (this.serverSyncTimeout) {
+      clearTimeout(this.serverSyncTimeout);
+    }
+    this.serverSyncTimeout = setTimeout(() => {
+      this.syncToServer();
+    }, 300);
+  }
+
+  public async pullFromServer(): Promise<boolean> {
+    if (typeof window === 'undefined' || !this.isServerSyncAvailable()) return false;
     try {
-      const serverUrl = window.location.origin;
-      fetch(`${serverUrl}/api/state`, {
+      const serverUrl = this.resolveServerUrl();
+      const res = await fetch(`${serverUrl}/api/state`, {
+        method: 'GET',
+        headers: { 'Accept': 'application/json' }
+      });
+      if (!res.ok) return false;
+      const data = await res.json();
+      if (!data.success || !data.state) return false;
+
+      const serverState: StorageState = data.state;
+      const localModified = this.state.last_modified || 0;
+      const serverModified = serverState.last_modified || 0;
+
+      const isLocalFresh = (!this.state.transactions || this.state.transactions.length === 0) &&
+                           (!this.state.journalEntries || this.state.journalEntries.length === 0);
+
+      const isServerHasData = (serverState.transactions && serverState.transactions.length > 0) ||
+                              (serverState.journalEntries && serverState.journalEntries.length > 0) ||
+                              (serverState.habits && serverState.habits.length > 0);
+
+      if (serverModified > localModified || (isLocalFresh && isServerHasData)) {
+        console.log('[SYNC] Server state is newer or local is fresh; synchronizing to local state');
+        this.state = serverState;
+        this.saveState(serverState, true);
+        this.notifyListeners();
+        this.setSyncStatus('saved');
+        if (this.savedStatusTimeout) clearTimeout(this.savedStatusTimeout);
+        this.savedStatusTimeout = setTimeout(() => this.setSyncStatus('idle'), 2000);
+        return true;
+      } else if (localModified > serverModified && !isLocalFresh) {
+        console.log('[SYNC] Local state is newer; synchronizing to cloud database');
+        this.syncToServer();
+      }
+      return true;
+    } catch (err: any) {
+      console.warn('[SYNC] Server pull failed:', err.message);
+      return false;
+    }
+  }
+
+  public async syncToServer(retryCount = 0): Promise<void> {
+    if (typeof window === 'undefined') return;
+    if (!this.isServerSyncAvailable()) {
+      this.setSyncStatus('saved');
+      if (this.savedStatusTimeout) clearTimeout(this.savedStatusTimeout);
+      this.savedStatusTimeout = setTimeout(() => {
+        if (this.syncStatus === 'saved') this.setSyncStatus('idle');
+      }, 1500);
+      return;
+    }
+    this.setSyncStatus('saving');
+    try {
+      const serverUrl = this.resolveServerUrl();
+      const res = await fetch(`${serverUrl}/api/state`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ state: this.state })
-      }).catch(() => {
-        // Quietly fallback to localStorage on static or standalone environments
       });
-    } catch {}
+      if (res.status === 404) {
+        // Purely static deployment (no backend) - local storage is the source of truth
+        this.setSyncStatus('idle');
+        return;
+      }
+      if (!res.ok) {
+        throw new Error(`Server returned HTTP ${res.status}`);
+      }
+      const data = await res.json();
+      if (data.success) {
+        this.setSyncStatus('saved');
+        if (this.savedStatusTimeout) clearTimeout(this.savedStatusTimeout);
+        this.savedStatusTimeout = setTimeout(() => {
+          if (this.syncStatus === 'saved') {
+            this.setSyncStatus('idle');
+          }
+        }, 2500);
+      } else {
+        throw new Error(data.error || 'Sync rejected');
+      }
+    } catch (err: any) {
+      if (retryCount < 3) {
+        const delay = Math.pow(2, retryCount) * 1000;
+        setTimeout(() => this.syncToServer(retryCount + 1), delay);
+      } else {
+        console.warn('[SYNC] Sync failed after retries:', err.message);
+        this.setSyncStatus('error', err.message || 'Network sync failed');
+      }
+    }
   }
 
   public resetToSeed(): StorageState {
@@ -1678,6 +1914,19 @@ class LocalStorageDB {
     this.notifyListeners();
     return clean;
   }
+
+  public importState(newState: StorageState): StorageState {
+    this.state = newState;
+    this.saveState(newState, true);
+    this.notifyListeners();
+    this.syncToServer();
+    return newState;
+  }
 }
 
 export const db = new LocalStorageDB();
+
+if (typeof window !== 'undefined') {
+  (window as any).__gd_db = db;
+  (window as any).db = db;
+}

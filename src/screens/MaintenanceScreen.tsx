@@ -17,7 +17,10 @@ import {
   RotateCcw,
   CheckCircle2,
   Edit2,
-  Trash2
+  Trash2,
+  Download,
+  Fuel,
+  FileText
 } from 'lucide-react';
 import { db, formatCurrency, getTodayLocalDate } from '../services/storage';
 import { 
@@ -27,7 +30,10 @@ import {
   completeMaintenanceItem, 
   addMaintenanceItem,
   updateMaintenanceItem,
-  deleteMaintenanceItem
+  deleteMaintenanceItem,
+  updateCarOdometer,
+  exportMaintenanceHistoryCsv,
+  exportMaintenanceHistoryMd
 } from '../services/maintenanceService';
 import { MaintenanceCategory, MaintenanceItem, RecurrenceType, ItemPriority, ModuleLayoutState, ModuleWidgetConfig, WidgetSize } from '../types';
 import { ModuleCustomizationService } from '../services/moduleCustomizationService';
@@ -36,7 +42,8 @@ import { ModuleEditHeader } from '../components/customization/ModuleEditHeader';
 import { ModuleWidgetContainer } from '../components/customization/ModuleWidgetContainer';
 import { ModuleAddWidgetModal } from '../components/customization/ModuleAddWidgetModal';
 import { ModulePresetModal } from '../components/customization/ModulePresetModal';
-import { MaintenanceWidgetRenderer } from '../components/maintenance/MaintenanceWidgetRenderer';
+import { MaintenanceWidgetRenderer, UpdateOdometerModal,
+  FuelLogModal, FuelMileageView, VehicleServiceModal } from '../components/maintenance';
 
 interface MaintenanceScreenProps {
   onRefresh: () => void;
@@ -45,7 +52,7 @@ interface MaintenanceScreenProps {
 
 export const MaintenanceScreen: React.FC<MaintenanceScreenProps> = ({ onRefresh, onBack }) => {
   const state = db.getState();
-  const [activeTab, setActiveTab] = useState<MaintenanceCategory | 'overview'>('overview');
+  const [activeTab, setActiveTab] = useState<MaintenanceCategory | 'overview' | 'fuel_mileage'>('overview');
 
   // Module Customization State
   const [layout, setLayout] = useState<ModuleLayoutState>(ModuleCustomizationService.getLayout('maintenance'));
@@ -56,6 +63,38 @@ export const MaintenanceScreen: React.FC<MaintenanceScreenProps> = ({ onRefresh,
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
   const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [isOdometerModalOpen, setIsOdometerModalOpen] = useState(false);
+  const [isFuelModalOpen, setIsFuelModalOpen] = useState(false);
+  const [isServiceModalOpen, setIsServiceModalOpen] = useState(false);
+
+  const handleExportServiceHistoryCsv = () => {
+    const csv = exportMaintenanceHistoryCsv();
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', `greendream_maintenance_${getTodayLocalDate()}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+    triggerToast('✓ Maintenance records exported as CSV');
+  };
+
+  const handleExportServiceHistoryMd = () => {
+    const md = exportMaintenanceHistoryMd();
+    const blob = new Blob([md], { type: 'text/markdown;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', `maintenance_audit_${getTodayLocalDate()}.md`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+    triggerToast('✓ Vehicle & care audit report exported as Markdown');
+  };
+
 
   const triggerToast = (msg: string) => {
     setToastMessage(msg);
@@ -357,17 +396,64 @@ export const MaintenanceScreen: React.FC<MaintenanceScreenProps> = ({ onRefresh,
         onOpenPresets={() => setIsPresetModalOpen(true)}
         onResetDefault={handleResetDefault}
         actionsRight={
-          <button
-            onClick={() => {
-              if (activeTab === 'overview') setNewCategory('personal_care');
-              else setNewCategory(activeTab as MaintenanceCategory);
-              setIsAddModalOpen(true);
-            }}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[var(--color-text-primary)] text-[var(--color-bg)] text-xs font-bold transition-all tap-feedback shadow-sm"
-          >
-            <Plus className="w-3.5 h-3.5 stroke-[3]" />
-            <span>Add</span>
-          </button>
+          <div className="flex items-center gap-1.5">
+            <button
+              type="button"
+              onClick={() => setIsServiceModalOpen(true)}
+              className="p-1.5 rounded-xl bg-[var(--color-surface)] border border-[var(--color-border)] text-[var(--color-text-secondary)] hover:text-cyan-400 hover:bg-[var(--color-surface-subtle)] transition-all cursor-pointer shadow-sm"
+              title="Vehicle Service & Parts Desk"
+              aria-label="Vehicle Service"
+            >
+              <Wrench className="w-4 h-4 text-cyan-400" />
+            </button>
+            <button
+              type="button"
+              onClick={() => setIsFuelModalOpen(true)}
+              className="p-1.5 rounded-xl bg-[var(--color-surface)] border border-[var(--color-border)] text-[var(--color-text-secondary)] hover:text-amber-400 hover:bg-[var(--color-surface-subtle)] transition-all cursor-pointer shadow-sm"
+              title="Fuel Fill-up Log & Mileage Efficiency"
+              aria-label="Fuel Log"
+            >
+              <Fuel className="w-4 h-4 text-amber-400" />
+            </button>
+            <button
+              type="button"
+              onClick={() => setIsOdometerModalOpen(true)}
+              className="p-1.5 rounded-xl bg-[var(--color-surface)] border border-[var(--color-border)] text-[var(--color-text-secondary)] hover:text-cyan-400 hover:bg-[var(--color-surface-subtle)] transition-all cursor-pointer shadow-sm"
+              title="Quick Update Car Odometer"
+              aria-label="Update Odometer"
+            >
+              <Gauge className="w-4 h-4 text-cyan-400" />
+            </button>
+            <button
+              type="button"
+              onClick={handleExportServiceHistoryCsv}
+              className="p-1.5 rounded-xl bg-[var(--color-surface)] border border-[var(--color-border)] text-[var(--color-text-secondary)] hover:text-[var(--color-accent)] hover:bg-[var(--color-surface-subtle)] transition-all cursor-pointer shadow-sm"
+              title="Export Maintenance History (.CSV)"
+              aria-label="Export Maintenance CSV"
+            >
+              <Download className="w-4 h-4" />
+            </button>
+            <button
+              type="button"
+              onClick={handleExportServiceHistoryMd}
+              className="p-1.5 rounded-xl bg-[var(--color-surface)] border border-[var(--color-border)] text-[var(--color-text-secondary)] hover:text-[var(--color-accent)] hover:bg-[var(--color-surface-subtle)] transition-all cursor-pointer shadow-sm"
+              title="Export Audit Report (.MD)"
+              aria-label="Export Maintenance MD"
+            >
+              <FileText className="w-4 h-4" />
+            </button>
+            <button
+              onClick={() => {
+                if (activeTab === 'overview') setNewCategory('personal_care');
+                else setNewCategory(activeTab as MaintenanceCategory);
+                setIsAddModalOpen(true);
+              }}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[var(--color-text-primary)] text-[var(--color-bg)] text-xs font-bold transition-all tap-feedback shadow-sm"
+            >
+              <Plus className="w-3.5 h-3.5 stroke-[3]" />
+              <span>Add</span>
+            </button>
+          </div>
         }
       />
 
@@ -441,6 +527,21 @@ export const MaintenanceScreen: React.FC<MaintenanceScreenProps> = ({ onRefresh,
           <ShoppingBag className="w-3.5 h-3.5" />
           <span>Shopping List</span>
         </button>
+
+        <button
+          onClick={() => {
+            if (isEditMode) setIsEditMode(false);
+            setActiveTab('fuel_mileage');
+          }}
+          className={`flex-1 flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl text-xs font-semibold whitespace-nowrap transition-all tap-feedback ${
+            activeTab === 'fuel_mileage'
+              ? 'bg-[var(--color-text-primary)] text-[var(--color-bg)] shadow-sm'
+              : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-elevated)]'
+          }`}
+        >
+          <Fuel className="w-3.5 h-3.5" />
+          <span>Fuel & Mileage</span>
+        </button>
       </div>
 
       {/* ======================================================== */}
@@ -492,7 +593,16 @@ export const MaintenanceScreen: React.FC<MaintenanceScreenProps> = ({ onRefresh,
       {/* ======================================================== */}
       {/* 4. ITEMS LIST (FOR ACTIVE TAB)                           */}
       {/* ======================================================== */}
-      {activeTab !== 'overview' && !isEditMode && (
+      {activeTab === 'fuel_mileage' && !isEditMode && (
+        <FuelMileageView
+          onOpenLogModal={() => setIsFuelModalOpen(true)}
+          onRefresh={onRefresh}
+          onToast={triggerToast}
+          currencyLabel={state.settings.currency_label || 'DA'}
+        />
+      )}
+
+      {activeTab !== 'overview' && activeTab !== 'fuel_mileage' && !isEditMode && (
         <div className="space-y-3">
         {filteredItems.length === 0 ? (
           <div className="text-center py-10 bg-[var(--color-surface)] rounded-2xl border border-[var(--color-border)] p-6 space-y-2">
@@ -984,6 +1094,34 @@ export const MaintenanceScreen: React.FC<MaintenanceScreenProps> = ({ onRefresh,
         moduleTitle="Personal Maintenance"
         activePreset={layout.preset}
         onSelectPreset={handleApplyPreset}
+      />
+
+      {/* Quick Odometer Synchronizer Modal */}
+      <UpdateOdometerModal
+        isOpen={isOdometerModalOpen}
+        onClose={() => setIsOdometerModalOpen(false)}
+        onSuccess={(msg) => {
+          triggerToast(msg);
+          onRefresh();
+        }}
+      />
+
+      {/* Fuel Fill-Up & Efficiency Modal */}
+      <FuelLogModal
+        isOpen={isFuelModalOpen}
+        onClose={() => setIsFuelModalOpen(false)}
+        onRefresh={onRefresh}
+        onToast={triggerToast}
+        
+        currencyLabel={state.settings.currency_label || 'DA'}
+      />
+
+      {/* Vehicle Service & Parts Desk Modal */}
+      <VehicleServiceModal
+        isOpen={isServiceModalOpen}
+        onClose={() => setIsServiceModalOpen(false)}
+        onRefresh={onRefresh}
+        onShowToast={triggerToast}
       />
     </div>
   );

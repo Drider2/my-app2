@@ -21,7 +21,8 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization', 'x-greendream-client', 'x-user-id']
 }));
 
-app.use(express.json({ limit: '1mb' }));
+app.use(express.json({ limit: '10mb' }));
+app.use(express.text({ limit: '10mb', type: ['text/plain', 'application/json'] }));
 
 // Request Sanitizer: NEVER log sensitive API keys or Authorization headers
 app.use((req, res, next) => {
@@ -185,12 +186,12 @@ const GEMINI_FREE_TIER_MODELS = [
 // ---------------------------------------------------------------------------
 
 // 1. Health & Status Check
-app.get('/health', (req, res) => {
+app.get(['/health', '/api/health'], (req, res) => {
   res.json({
     status: 'ok',
     service: 'GreenDream Gemini AI Proxy',
     provider: 'Google Gemini',
-    version: '1.3.0',
+    version: '1.3.1',
     timestamp: Date.now()
   });
 });
@@ -547,20 +548,99 @@ ${systemContext || 'No additional records requested.'}
 });
 
 // ---------------------------------------------------------------------------
-// Real Persistent Store: JSON File Database Sync (/api/state)
+// Real Persistent Store: In-Memory Cache + Rock-Solid Disk Sync (/api/state)
 // ---------------------------------------------------------------------------
 const DATA_DIR = path.join(__dirname, 'data');
 const STATE_FILE_PATH = path.join(DATA_DIR, 'greendream_state.json');
+const BAK_FILE_PATH = path.join(DATA_DIR, 'greendream_state.bak.json');
 
 if (!fs.existsSync(DATA_DIR)) {
   fs.mkdirSync(DATA_DIR, { recursive: true });
 }
 
-app.get('/api/state', (req, res) => {
+// In-memory hot cache primed from disk
+let cachedState = null;
+try {
+  if (fs.existsSync(STATE_FILE_PATH)) {
+    cachedState = JSON.parse(fs.readFileSync(STATE_FILE_PATH, 'utf8'));
+  } else if (fs.existsSync(BAK_FILE_PATH)) {
+    cachedState = JSON.parse(fs.readFileSync(BAK_FILE_PATH, 'utf8'));
+  }
+} catch (e) {
+  console.warn('[SERVER] Could not prime state cache from disk:', e.message);
+}
+
+let isWriting = false;
+let pendingDiskState = null;
+
+async function flushToDisk() {
+  if (isWriting || !pendingDiskState) return;
+  isWriting = true;
+  const stateToPersist = pendingDiskState;
+  pendingDiskState = null;
+
+  const content = JSON.stringify(stateToPersist, null, 2);
+  const tempFilePath = `${STATE_FILE_PATH}.${Date.now()}.${Math.random().toString(36).slice(2, 6)}.tmp`;
+
   try {
+    // 1. Write temp file
+    await fs.promises.writeFile(tempFilePath, content, 'utf8');
+
+    // 2. Backup current state if it exists
     if (fs.existsSync(STATE_FILE_PATH)) {
-      const stateContent = fs.readFileSync(STATE_FILE_PATH, 'utf8');
-      return res.json({ success: true, state: JSON.parse(stateContent) });
+      try {
+        await fs.promises.copyFile(STATE_FILE_PATH, BAK_FILE_PATH);
+      } catch (e) {}
+    }
+
+    // 3. Robust atomic rename with retry loop for Windows OneDrive file locks
+    let renamed = false;
+    for (let attempt = 0; attempt < 8; attempt++) {
+      try {
+        if (fs.existsSync(STATE_FILE_PATH)) {
+          try { await fs.promises.unlink(STATE_FILE_PATH); } catch (e) {}
+        }
+        await fs.promises.rename(tempFilePath, STATE_FILE_PATH);
+        renamed = true;
+        break;
+      } catch (err) {
+        await new Promise(r => setTimeout(r, 40 * (attempt + 1)));
+      }
+    }
+
+    if (!renamed) {
+      // Direct write fallback
+      await fs.promises.writeFile(STATE_FILE_PATH, content, 'utf8');
+    }
+  } catch (err) {
+    console.error('[SERVER] Disk persistence warning (state safe in-memory cache):', err.message);
+  } finally {
+    try { await fs.promises.unlink(tempFilePath); } catch (e) {}
+    isWriting = false;
+    // If newer state arrived while writing, flush again
+    if (pendingDiskState) {
+      setImmediate(flushToDisk);
+    }
+  }
+}
+
+app.get('/api/state', async (req, res) => {
+  try {
+    if (cachedState) {
+      return res.json({ success: true, state: cachedState });
+    }
+    if (fs.existsSync(STATE_FILE_PATH)) {
+      try {
+        const stateContent = await fs.promises.readFile(STATE_FILE_PATH, 'utf8');
+        cachedState = JSON.parse(stateContent);
+        return res.json({ success: true, state: cachedState });
+      } catch (readErr) {
+        if (fs.existsSync(BAK_FILE_PATH)) {
+          const bakContent = await fs.promises.readFile(BAK_FILE_PATH, 'utf8');
+          cachedState = JSON.parse(bakContent);
+          return res.json({ success: true, state: cachedState });
+        }
+      }
     }
     return res.json({ success: true, state: null });
   } catch (err) {
@@ -569,16 +649,26 @@ app.get('/api/state', (req, res) => {
 });
 
 app.post('/api/state', (req, res) => {
-  try {
-    const { state } = req.body;
-    if (!state) {
-      return res.status(400).json({ success: false, error: 'No state payload provided' });
-    }
-    fs.writeFileSync(STATE_FILE_PATH, JSON.stringify(state, null, 2), 'utf8');
-    return res.json({ success: true, savedAt: Date.now() });
-  } catch (err) {
-    return res.status(500).json({ success: false, error: err.message });
+  let state = req.body?.state;
+  if (!state && typeof req.body === 'string') {
+    try {
+      const parsed = JSON.parse(req.body);
+      state = parsed.state;
+    } catch {}
   }
+  if (!state) {
+    return res.status(400).json({ success: false, error: 'No state payload provided' });
+  }
+
+  // 1. Immediately update in-memory hot cache (guarantees instantaneous consistency)
+  cachedState = state;
+
+  // 2. Queue asynchronous background disk persistence
+  pendingDiskState = state;
+  flushToDisk();
+
+  // 3. Immediately return 200 Success
+  return res.json({ success: true, savedAt: Date.now() });
 });
 
 // Start Server

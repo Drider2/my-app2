@@ -1,6 +1,8 @@
 import React, { useState, useEffect, Suspense, lazy } from 'react';
-import { BottomNavigation, ScreenId } from './components/Navigation';
-import { WebHeader } from './components/WebHeader';
+import { BottomNavigation, NavigationRail, ScreenId } from './components/Navigation';
+import { useLayout } from './hooks/useLayout';
+import { Page } from './components/layout/Page';
+import { SaveFeedbackBadge } from './components/layout/SaveFeedbackBadge';
 import { AddActionSheet } from './components/AddActionSheet';
 import { OnboardingModal } from './components/onboarding/OnboardingModal';
 import { HermesChatModal } from './components/ai/HermesChatModal';
@@ -33,6 +35,7 @@ const MoreScreen = lazy(() => import('./screens/MoreScreen').then(m => ({ defaul
 const FlameScreen = lazy(() => import('./screens/FlameScreen').then(m => ({ default: m.FlameScreen })));
 
 export function App() {
+  useLayout();
   const [currentScreen, setCurrentScreen] = useState<ScreenId>('dashboard');
   const [isAddSheetOpen, setIsAddSheetOpen] = useState(false);
   const [isOnboardingOpen, setIsOnboardingOpen] = useState(false);
@@ -200,8 +203,11 @@ export function App() {
       {/* Android Status Bar Safe Area Top Spacer */}
       <div className="w-full pt-[env(safe-area-inset-top)]" />
 
-      {/* Web Header Navigation Bar (Tablet & Desktop) */}
-      <WebHeader
+      {/* Visible Save / Cloud Sync Feedback Badge */}
+      <SaveFeedbackBadge />
+
+      {/* Tablet Left Navigation Rail (96px, with '+' button at top) */}
+      <NavigationRail
         currentScreen={currentScreen}
         onSelectScreen={navigateScreen}
         onOpenAddSheet={() => setIsAddSheetOpen(true)}
@@ -209,15 +215,15 @@ export function App() {
       />
 
       {/* Main Responsive Screen Canvas */}
-      <main className="relative z-[1] flex-1 w-full max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6 overflow-y-auto no-scrollbar pb-28 md:pb-8">
-        <div key={`${currentScreen}-${refreshKey}`} className="w-full h-full animate-enter">
+      <main className="relative z-[1] flex-1 w-full ms-[var(--nav-w)] transition-all duration-150 overflow-y-auto no-scrollbar">
+        <Page key={currentScreen} className="animate-enter min-h-full">
           <Suspense fallback={<ScreenSkeleton />}>
             {renderActiveScreen()}
           </Suspense>
-        </div>
+        </Page>
       </main>
 
-      {/* Floating Bottom Navigation */}
+      {/* Phone & Wide Floating Bottom Navigation */}
       <BottomNavigation
         currentScreen={currentScreen}
         onSelectScreen={navigateScreen}

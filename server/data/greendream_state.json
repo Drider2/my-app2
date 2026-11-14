@@ -24,7 +24,7 @@
       "direct_mode": true,
       "connection_status": "connected",
       "connection_error": null,
-      "last_tested_at": 1794223212620,
+      "last_tested_at": 1794635657120,
       "response_length": "balanced",
       "permissions": {
         "finance_read": true,
@@ -39,7 +39,7 @@
         "completion_tokens": 0,
         "rate_limit_errors": 0,
         "today_requests": 0,
-        "today_date": "2026-11-09",
+        "today_date": "2026-11-14",
         "free_tier_status": "active"
       }
     },
@@ -59,14 +59,14 @@
     },
     "flame": {
       "enabled": true,
-      "startDate": "2026-11-09",
+      "startDate": "2026-11-14",
       "relapses": [],
       "goalDays": 30,
       "showNumber": true,
       "celebrations": {
-        "streakKey": "2026-11-09",
+        "streakKey": "2026-11-14",
         "done": [],
-        "lastSeenDay": "2026-11-09"
+        "lastSeenDay": "2026-11-14"
       },
       "phraseHistory": [],
       "savedPhrases": [],
@@ -85,7 +85,8 @@
       "assistant": true,
       "flame": true
     },
-    "show_customize_banner": false
+    "show_customize_banner": false,
+    "display_mode": "auto"
   },
   "habits": [],
   "habitSchedules": [],
@@ -112,8 +113,8 @@
           "weight": 0.5
         }
       ],
-      "created_at": 1794223212620,
-      "updated_at": 1794223212620,
+      "created_at": 1794635657120,
+      "updated_at": 1794635657120,
       "deleted_at": null
     },
     {
@@ -132,8 +133,8 @@
           "weight": 0.5
         }
       ],
-      "created_at": 1794223212620,
-      "updated_at": 1794223212620,
+      "created_at": 1794635657120,
+      "updated_at": 1794635657120,
       "deleted_at": null
     },
     {
@@ -157,8 +158,8 @@
           "weight": 0.5
         }
       ],
-      "created_at": 1794223212620,
-      "updated_at": 1794223212620,
+      "created_at": 1794635657120,
+      "updated_at": 1794635657120,
       "deleted_at": null
     },
     {
@@ -177,8 +178,8 @@
           "weight": 0.5
         }
       ],
-      "created_at": 1794223212620,
-      "updated_at": 1794223212620,
+      "created_at": 1794635657120,
+      "updated_at": 1794635657120,
       "deleted_at": null
     }
   ],
@@ -198,8 +199,8 @@
       "rollover": "reset",
       "alert_threshold": 0.8,
       "color": "#F59E0B",
-      "created_at": 1794223212623,
-      "updated_at": 1794223212623,
+      "created_at": 1794635657122,
+      "updated_at": 1794635657122,
       "deleted_at": null
     },
     {
@@ -210,8 +211,8 @@
       "rollover": "reset",
       "alert_threshold": 0.8,
       "color": "#3B82F6",
-      "created_at": 1794223212623,
-      "updated_at": 1794223212623,
+      "created_at": 1794635657122,
+      "updated_at": 1794635657122,
       "deleted_at": null
     },
     {
@@ -222,8 +223,8 @@
       "rollover": "reset",
       "alert_threshold": 0.8,
       "color": "#EC4899",
-      "created_at": 1794223212623,
-      "updated_at": 1794223212623,
+      "created_at": 1794635657122,
+      "updated_at": 1794635657122,
       "deleted_at": null
     },
     {
@@ -234,8 +235,8 @@
       "rollover": "reset",
       "alert_threshold": 0.8,
       "color": "#8B5CF6",
-      "created_at": 1794223212623,
-      "updated_at": 1794223212623,
+      "created_at": 1794635657122,
+      "updated_at": 1794635657122,
       "deleted_at": null
     },
     {
@@ -246,8 +247,8 @@
       "rollover": "reset",
       "alert_threshold": 0.8,
       "color": "#10B981",
-      "created_at": 1794223212623,
-      "updated_at": 1794223212623,
+      "created_at": 1794635657122,
+      "updated_at": 1794635657122,
       "deleted_at": null
     },
     {
@@ -258,8 +259,8 @@
       "rollover": "reset",
       "alert_threshold": 0.8,
       "color": "#F97316",
-      "created_at": 1794223212623,
-      "updated_at": 1794223212623,
+      "created_at": 1794635657122,
+      "updated_at": 1794635657122,
       "deleted_at": null
     },
     {
@@ -270,8 +271,8 @@
       "rollover": "reset",
       "alert_threshold": 0.8,
       "color": "#6366F1",
-      "created_at": 1794223212623,
-      "updated_at": 1794223212623,
+      "created_at": 1794635657122,
+      "updated_at": 1794635657122,
       "deleted_at": null
     },
     {
@@ -282,8 +283,8 @@
       "rollover": "reset",
       "alert_threshold": 0.8,
       "color": "#14B8A6",
-      "created_at": 1794223212623,
-      "updated_at": 1794223212623,
+      "created_at": 1794635657122,
+      "updated_at": 1794635657122,
       "deleted_at": null
     },
     {
@@ -294,8 +295,8 @@
       "rollover": "reset",
       "alert_threshold": 0.8,
       "color": "#A6D96A",
-      "created_at": 1794223212623,
-      "updated_at": 1794223212623,
+      "created_at": 1794635657122,
+      "updated_at": 1794635657122,
       "deleted_at": null
     },
     {
@@ -306,23 +307,35 @@
       "rollover": "reset",
       "alert_threshold": 0.9,
       "color": "#38BDF8",
-      "created_at": 1794223212623,
-      "updated_at": 1794223212623,
+      "created_at": 1794635657122,
+      "updated_at": 1794635657122,
       "deleted_at": null
     }
   ],
-  "transactions": [],
+  "transactions": [
+    {
+      "id": "tx-audit-1794636228063",
+      "type": "expense",
+      "amount_minor": 350000,
+      "local_date": "2026-11-14",
+      "category_id": "cat-food",
+      "note": "Fresh Organic Groceries 1794636228063",
+      "created_at": 1794636228064,
+      "updated_at": 1794636228064,
+      "deleted_at": null
+    }
+  ],
   "savingsGoals": [],
   "salarySetting": {
     "monthly_salary_minor": 0,
     "payment_day": 1,
-    "effective_from": "2026-11-09",
+    "effective_from": "2026-11-14",
     "history": []
   },
   "savingsAccount": {
     "current_balance_minor": 0,
     "starting_balance_minor": 0,
-    "starting_date": "2026-11-09",
+    "starting_date": "2026-11-14",
     "notes": "Clean Slate Savings"
   },
   "savingsTransactions": [],
@@ -333,17 +346,17 @@
     "gym_amount_minor": 0,
     "shopping_amount_minor": 0,
     "other_amount_minor": 0,
-    "updated_at": 1794223212622
+    "updated_at": 1794635657121
   },
   "recurringRules": [],
   "journalEntries": [],
   "assistantProposals": [],
   "assistantNotices": [
     {
-      "id": "9f0345eb-c9c8-4307-a88e-5425131665ab",
+      "id": "4cd0f4f1-2446-42f0-a2df-119d7c244abc",
       "rule_id": "maintenance_due",
       "title": "Maintenance Due: Cotton Underwear & Socks Pack",
-      "message": "Cotton Underwear & Socks Pack was scheduled for 2026-11-09.",
+      "message": "Cotton Underwear & Socks Pack was scheduled for 2026-11-14.",
       "severity": "high",
       "status": "new",
       "related_ids": [
@@ -362,12 +375,12 @@
           "action_type": "dismiss_notice"
         }
       ],
-      "created_at": 1794223213336,
-      "updated_at": 1794223213336,
+      "created_at": 1794636006002,
+      "updated_at": 1794636006002,
       "deleted_at": null
     },
     {
-      "id": "a6196b50-56fd-4a69-b657-c9fd3548eebf",
+      "id": "a7628659-d199-41db-9669-eae52f7fce47",
       "rule_id": "maintenance_due",
       "title": "Maintenance Due: Shampoo & Conditioner Refill",
       "message": "Shampoo & Conditioner Refill was scheduled for 2026-11-08.",
@@ -389,8 +402,35 @@
           "action_type": "dismiss_notice"
         }
       ],
-      "created_at": 1794223213336,
-      "updated_at": 1794223213336,
+      "created_at": 1794636006002,
+      "updated_at": 1794636006002,
+      "deleted_at": null
+    },
+    {
+      "id": "a218e7cd-4423-4610-bdb5-14e5dcd2a81a",
+      "rule_id": "maintenance_due",
+      "title": "Maintenance Due: Haircut & Beard Trim",
+      "message": "Haircut & Beard Trim was scheduled for 2026-11-14.",
+      "severity": "high",
+      "status": "new",
+      "related_ids": [
+        "maint-1"
+      ],
+      "options": [
+        {
+          "label": "Mark Done",
+          "action_type": "complete_maintenance",
+          "payload": {
+            "item_id": "maint-1"
+          }
+        },
+        {
+          "label": "Dismiss",
+          "action_type": "dismiss_notice"
+        }
+      ],
+      "created_at": 1794636006002,
+      "updated_at": 1794636006002,
       "deleted_at": null
     }
   ],
@@ -401,9 +441,9 @@
       "prayer": "fajr",
       "completed": false,
       "completed_at": null,
-      "local_date": "2026-11-09",
-      "created_at": 1794223212622,
-      "updated_at": 1794223212622,
+      "local_date": "2026-11-14",
+      "created_at": 1794635657121,
+      "updated_at": 1794635657121,
       "deleted_at": null
     },
     {
@@ -411,9 +451,9 @@
       "prayer": "dhuhr",
       "completed": false,
       "completed_at": null,
-      "local_date": "2026-11-09",
-      "created_at": 1794223212622,
-      "updated_at": 1794223212622,
+      "local_date": "2026-11-14",
+      "created_at": 1794635657121,
+      "updated_at": 1794635657121,
       "deleted_at": null
     },
     {
@@ -421,9 +461,9 @@
       "prayer": "asr",
       "completed": false,
       "completed_at": null,
-      "local_date": "2026-11-09",
-      "created_at": 1794223212622,
-      "updated_at": 1794223212622,
+      "local_date": "2026-11-14",
+      "created_at": 1794635657121,
+      "updated_at": 1794635657121,
       "deleted_at": null
     },
     {
@@ -431,9 +471,9 @@
       "prayer": "maghrib",
       "completed": false,
       "completed_at": null,
-      "local_date": "2026-11-09",
-      "created_at": 1794223212622,
-      "updated_at": 1794223212622,
+      "local_date": "2026-11-14",
+      "created_at": 1794635657121,
+      "updated_at": 1794635657121,
       "deleted_at": null
     },
     {
@@ -441,9 +481,9 @@
       "prayer": "isha",
       "completed": false,
       "completed_at": null,
-      "local_date": "2026-11-09",
-      "created_at": 1794223212622,
-      "updated_at": 1794223212622,
+      "local_date": "2026-11-14",
+      "created_at": 1794635657121,
+      "updated_at": 1794635657121,
       "deleted_at": null
     }
   ],
@@ -477,11 +517,11 @@
       "last_service_date": "2026-11-04",
       "next_reminder_date": "2026-11-14",
       "priority": "high",
-      "status": "upcoming",
+      "status": "due",
       "notes": "Fade haircut and beard line at Barber Studio",
       "finance_category_id": "cat-personal",
-      "created_at": 1794223212971,
-      "updated_at": 1794223212971,
+      "created_at": 1794636005570,
+      "updated_at": 1794636005997,
       "deleted_at": null
     },
     {
@@ -497,8 +537,8 @@
       "status": "due",
       "notes": "Sulfate-free keratin formula",
       "finance_category_id": "cat-personal",
-      "created_at": 1794223212971,
-      "updated_at": 1794223213333,
+      "created_at": 1794636005570,
+      "updated_at": 1794636005997,
       "deleted_at": null
     },
     {
@@ -514,8 +554,8 @@
       "status": "upcoming",
       "notes": "Soft bristles, hygienic switch",
       "finance_category_id": "cat-personal",
-      "created_at": 1794223212971,
-      "updated_at": 1794223212971,
+      "created_at": 1794636005570,
+      "updated_at": 1794636005570,
       "deleted_at": null
     },
     {
@@ -534,8 +574,8 @@
       "status": "upcoming",
       "notes": "5W-40 Synthetic + OEM oil filter",
       "finance_category_id": "cat-car",
-      "created_at": 1794223212971,
-      "updated_at": 1794223212971,
+      "created_at": 1794636005570,
+      "updated_at": 1794636005570,
       "deleted_at": null
     },
     {
@@ -551,8 +591,8 @@
       "status": "upcoming",
       "notes": "Front ceramic pads wear inspection",
       "finance_category_id": "cat-car",
-      "created_at": 1794223212971,
-      "updated_at": 1794223212971,
+      "created_at": 1794636005570,
+      "updated_at": 1794636005570,
       "deleted_at": null
     },
     {
@@ -561,14 +601,14 @@
       "category": "shopping",
       "estimated_cost_minor": 250000,
       "recurrence_type": "as_needed",
-      "next_reminder_date": "2026-11-09",
+      "next_reminder_date": "2026-11-14",
       "priority": "high",
       "status": "due",
       "is_purchased": false,
       "notes": "Pure breathable cotton trunks and training socks",
       "finance_category_id": "cat-personal",
-      "created_at": 1794223212971,
-      "updated_at": 1794223213333,
+      "created_at": 1794636005570,
+      "updated_at": 1794636005997,
       "deleted_at": null
     },
     {
@@ -584,8 +624,8 @@
       "status": "upcoming",
       "notes": "Gym nutrition recovery",
       "finance_category_id": "cat-gym",
-      "created_at": 1794223212971,
-      "updated_at": 1794223212971,
+      "created_at": 1794636005570,
+      "updated_at": 1794636005570,
       "deleted_at": null
     },
     {
@@ -600,8 +640,8 @@
       "is_purchased": false,
       "notes": "Road running and treadmill cushioning",
       "finance_category_id": "cat-personal",
-      "created_at": 1794223212971,
-      "updated_at": 1794223212971,
+      "created_at": 1794636005570,
+      "updated_at": 1794636005570,
       "deleted_at": null
     }
   ],
@@ -733,9 +773,152 @@
         "order": 16
       }
     ],
-    "updated_at": 1794223212623
+    "updated_at": 1794635657122
   },
-  "moduleLayouts": {},
+  "moduleLayouts": {
+    "finance": {
+      "moduleId": "finance",
+      "version": 1,
+      "preset": "complete_finance",
+      "widgets": [
+        {
+          "id": "mod-finance-finance_balance-0",
+          "widgetType": "finance_balance",
+          "size": "small",
+          "visible": true,
+          "order": 0
+        },
+        {
+          "id": "mod-finance-finance_income-1",
+          "widgetType": "finance_income",
+          "size": "small",
+          "visible": true,
+          "order": 1
+        },
+        {
+          "id": "mod-finance-finance_expenses-2",
+          "widgetType": "finance_expenses",
+          "size": "small",
+          "visible": true,
+          "order": 2
+        },
+        {
+          "id": "mod-finance-finance_sadaqah-3",
+          "widgetType": "finance_sadaqah",
+          "size": "small",
+          "visible": true,
+          "order": 3
+        },
+        {
+          "id": "mod-finance-finance_forecast-4",
+          "widgetType": "finance_forecast",
+          "size": "full",
+          "visible": true,
+          "order": 4
+        },
+        {
+          "id": "mod-finance-finance_savings-5",
+          "widgetType": "finance_savings",
+          "size": "medium",
+          "visible": true,
+          "order": 5
+        },
+        {
+          "id": "mod-finance-finance_quick_expenses-6",
+          "widgetType": "finance_quick_expenses",
+          "size": "full",
+          "visible": true,
+          "order": 6
+        },
+        {
+          "id": "mod-finance-finance_budget-7",
+          "widgetType": "finance_budget",
+          "size": "medium",
+          "visible": true,
+          "order": 7
+        },
+        {
+          "id": "mod-finance-finance_category_spending-8",
+          "widgetType": "finance_category_spending",
+          "size": "medium",
+          "visible": true,
+          "order": 8
+        },
+        {
+          "id": "mod-finance-finance_savings_goals-9",
+          "widgetType": "finance_savings_goals",
+          "size": "full",
+          "visible": true,
+          "order": 9
+        },
+        {
+          "id": "mod-finance-finance_allocation-10",
+          "widgetType": "finance_allocation",
+          "size": "full",
+          "visible": true,
+          "order": 10
+        },
+        {
+          "id": "mod-finance-finance_money_lent-11",
+          "widgetType": "finance_money_lent",
+          "size": "medium",
+          "visible": true,
+          "order": 11
+        },
+        {
+          "id": "mod-finance-finance_affordability-12",
+          "widgetType": "finance_affordability",
+          "size": "medium",
+          "visible": true,
+          "order": 12
+        },
+        {
+          "id": "mod-finance-finance_transactions-13",
+          "widgetType": "finance_transactions",
+          "size": "full",
+          "visible": true,
+          "order": 13
+        }
+      ],
+      "updated_at": 1794650396209
+    },
+    "prayers": {
+      "moduleId": "prayers",
+      "version": 1,
+      "preset": "complete_spiritual",
+      "widgets": [
+        {
+          "id": "mod-prayers-prayers_daily_times-0",
+          "widgetType": "prayers_daily_times",
+          "size": "full",
+          "visible": true,
+          "order": 0
+        },
+        {
+          "id": "mod-prayers-prayers_progress_indicator-1",
+          "widgetType": "prayers_progress_indicator",
+          "size": "full",
+          "visible": true,
+          "order": 1
+        },
+        {
+          "id": "mod-prayers-prayers_weekly_overview-2",
+          "widgetType": "prayers_weekly_overview",
+          "size": "medium",
+          "visible": true,
+          "order": 2
+        },
+        {
+          "id": "mod-prayers-prayers_history-3",
+          "widgetType": "prayers_history",
+          "size": "full",
+          "visible": true,
+          "order": 3
+        }
+      ],
+      "updated_at": 1794650396707
+    }
+  },
   "allocationPlans": [],
   "sadaqahSettings": {
     "type": "percentage",
@@ -755,5 +938,12 @@
     "excluded_category_ids": [],
     "discipline_enabled": true,
     "discipline_weight": 3
-  }
+  },
+  "shoppingItems": [],
+  "fastingEntries": [],
+  "last_modified": 1794651318536,
+  "hydrationLogs": {},
+  "dailyWaterTargetMl": 2500,
+  "hermesChats": [],
+  "hermesNotes": []
 }

@@ -182,12 +182,19 @@ export const HermesStorage = {
   // 2. Chat Sessions Manager (gd_hermes_chats)
   // ========================================================
   getChats(): HermesChatSession[] {
+    const stateChats = db.getState().hermesChats;
+    if (Array.isArray(stateChats) && stateChats.length > 0) {
+      return [...stateChats].sort((a, b) => b.updated_at - a.updated_at);
+    }
     if (typeof localStorage === 'undefined') return [];
     try {
       const raw = localStorage.getItem(CHATS_STORAGE_KEY);
       if (!raw) return [];
       const parsed = JSON.parse(raw);
       if (Array.isArray(parsed)) {
+        db.updateState(draft => {
+          draft.hermesChats = parsed;
+        });
         return parsed.sort((a, b) => b.updated_at - a.updated_at);
       }
     } catch (e) {
@@ -202,7 +209,6 @@ export const HermesStorage = {
   },
 
   saveChat(session: HermesChatSession): void {
-    if (typeof localStorage === 'undefined') return;
     try {
       const chats = this.getChats();
       const existingIdx = chats.findIndex(c => c.id === session.id);
@@ -235,31 +241,44 @@ export const HermesStorage = {
 
       // Cap at MAX_STORED_CHATS
       const capped = chats.slice(0, MAX_STORED_CHATS);
-      localStorage.setItem(CHATS_STORAGE_KEY, JSON.stringify(capped));
+      if (typeof localStorage !== 'undefined') {
+        localStorage.setItem(CHATS_STORAGE_KEY, JSON.stringify(capped));
+      }
+      db.updateState(draft => {
+        draft.hermesChats = capped;
+      });
     } catch (e) {
       console.error('Failed to save Hermes chat session', e);
     }
   },
 
   deleteChat(id: string): void {
-    if (typeof localStorage === 'undefined') return;
     try {
       const chats = this.getChats().filter(c => c.id !== id);
-      localStorage.setItem(CHATS_STORAGE_KEY, JSON.stringify(chats));
+      if (typeof localStorage !== 'undefined') {
+        localStorage.setItem(CHATS_STORAGE_KEY, JSON.stringify(chats));
+      }
+      db.updateState(draft => {
+        draft.hermesChats = chats;
+      });
     } catch (e) {
       console.error('Failed to delete Hermes chat', e);
     }
   },
 
   renameChat(id: string, newTitle: string): void {
-    if (typeof localStorage === 'undefined') return;
     try {
       const chats = this.getChats();
       const chat = chats.find(c => c.id === id);
       if (chat) {
         chat.title = newTitle.trim() || 'Conversation';
         chat.updated_at = Date.now();
-        localStorage.setItem(CHATS_STORAGE_KEY, JSON.stringify(chats));
+        if (typeof localStorage !== 'undefined') {
+          localStorage.setItem(CHATS_STORAGE_KEY, JSON.stringify(chats));
+        }
+        db.updateState(draft => {
+          draft.hermesChats = chats;
+        });
       }
     } catch (e) {
       console.error('Failed to rename Hermes chat', e);
@@ -267,8 +286,12 @@ export const HermesStorage = {
   },
 
   clearAllChats(): void {
-    if (typeof localStorage === 'undefined') return;
-    localStorage.removeItem(CHATS_STORAGE_KEY);
+    if (typeof localStorage !== 'undefined') {
+      localStorage.removeItem(CHATS_STORAGE_KEY);
+    }
+    db.updateState(draft => {
+      draft.hermesChats = [];
+    });
   },
 
   getVoiceStorageStats(): { count: number; totalBytes: number; formattedSize: string } {
@@ -340,12 +363,19 @@ export const HermesStorage = {
   // 3. Hermes Memory Notes (gd_hermes_notes)
   // ========================================================
   getMemoryNotes(): HermesMemoryNote[] {
+    const stateNotes = db.getState().hermesNotes;
+    if (Array.isArray(stateNotes) && stateNotes.length > 0) {
+      return [...stateNotes].sort((a, b) => b.updated_at - a.updated_at);
+    }
     if (typeof localStorage === 'undefined') return [];
     try {
       const raw = localStorage.getItem(NOTES_STORAGE_KEY);
       if (!raw) return [];
       const parsed = JSON.parse(raw);
       if (Array.isArray(parsed)) {
+        db.updateState(draft => {
+          draft.hermesNotes = parsed;
+        });
         return parsed.sort((a, b) => b.updated_at - a.updated_at);
       }
     } catch (e) {
@@ -363,34 +393,49 @@ export const HermesStorage = {
       updated_at: Date.now(),
     };
 
+    const notes = this.getMemoryNotes();
+    notes.unshift(note);
+    const capped = notes.slice(0, MAX_STORED_NOTES);
     if (typeof localStorage !== 'undefined') {
-      const notes = this.getMemoryNotes();
-      notes.unshift(note);
-      const capped = notes.slice(0, MAX_STORED_NOTES);
       localStorage.setItem(NOTES_STORAGE_KEY, JSON.stringify(capped));
     }
+    db.updateState(draft => {
+      draft.hermesNotes = capped;
+    });
     return note;
   },
 
   updateMemoryNote(id: string, content: string): void {
-    if (typeof localStorage === 'undefined') return;
     const notes = this.getMemoryNotes();
     const target = notes.find(n => n.id === id);
     if (target) {
       target.content = content.trim();
       target.updated_at = Date.now();
-      localStorage.setItem(NOTES_STORAGE_KEY, JSON.stringify(notes));
+      if (typeof localStorage !== 'undefined') {
+        localStorage.setItem(NOTES_STORAGE_KEY, JSON.stringify(notes));
+      }
+      db.updateState(draft => {
+        draft.hermesNotes = notes;
+      });
     }
   },
 
   deleteMemoryNote(id: string): void {
-    if (typeof localStorage === 'undefined') return;
     const notes = this.getMemoryNotes().filter(n => n.id !== id);
-    localStorage.setItem(NOTES_STORAGE_KEY, JSON.stringify(notes));
+    if (typeof localStorage !== 'undefined') {
+      localStorage.setItem(NOTES_STORAGE_KEY, JSON.stringify(notes));
+    }
+    db.updateState(draft => {
+      draft.hermesNotes = notes;
+    });
   },
 
   clearAllMemoryNotes(): void {
-    if (typeof localStorage === 'undefined') return;
-    localStorage.removeItem(NOTES_STORAGE_KEY);
+    if (typeof localStorage !== 'undefined') {
+      localStorage.removeItem(NOTES_STORAGE_KEY);
+    }
+    db.updateState(draft => {
+      draft.hermesNotes = [];
+    });
   },
 };

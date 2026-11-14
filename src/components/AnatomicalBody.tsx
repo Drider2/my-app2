@@ -53,7 +53,7 @@ export const AnatomicalBody: React.FC<AnatomicalBodyProps> = ({
   return (
     <div className="relative flex flex-col items-center justify-center py-2 select-none">
       {/* Front / Back View Switcher Pill */}
-      <div className="absolute top-0 right-1 z-20">
+      <div className="absolute top-0 end-1 z-20">
         <button
           onClick={onToggleView}
           className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[var(--color-surface)] border border-[var(--color-border)] text-[var(--color-accent)] text-xs font-bold  hover:bg-[#222C24] transition-all tap-feedback"

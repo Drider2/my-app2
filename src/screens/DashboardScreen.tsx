@@ -22,7 +22,8 @@ import {
   CalendarDays,
   Activity,
   ArrowRight,
-  Settings
+  Settings,
+  BedDouble
 } from 'lucide-react';
 import { db, generateUUID, getTodayLocalDate, formatCurrency } from '../services/storage';
 import { calculateMonthSpending } from '../services/calculation';
@@ -42,6 +43,10 @@ import { WIDGET_REGISTRY } from '../services/widgetRegistry';
 import { DashboardWidgetRenderer } from '../components/dashboard/DashboardWidgetRenderer';
 import { AddWidgetModal } from '../components/dashboard/AddWidgetModal';
 import { PresetSelectorModal } from '../components/dashboard/PresetSelectorModal';
+import { HydrationCard } from '../components/dashboard/HydrationCard';
+import { HabitsConsistencyCard } from '../components/dashboard/HabitsConsistencyCard';
+import { SleepRecoveryCard } from '../components/dashboard/SleepRecoveryCard';
+import { SleepTrackerModal } from '../components/health/SleepTrackerModal';
 import { 
   MaintenanceItem, 
   PrayerName, 
@@ -94,6 +99,7 @@ export const DashboardScreen: React.FC<DashboardScreenProps> = ({
   const [draftWidgets, setDraftWidgets] = useState<DashboardWidgetConfig[]>([]);
   const [isAddWidgetModalOpen, setIsAddWidgetModalOpen] = useState(false);
   const [isPresetModalOpen, setIsPresetModalOpen] = useState(false);
+  const [isSleepModalOpen, setIsSleepModalOpen] = useState(false);
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
   const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
 
@@ -615,6 +621,15 @@ export const DashboardScreen: React.FC<DashboardScreenProps> = ({
                 <Sparkles className="w-4 h-4" />
               </button>
             )}
+            <button
+              type="button"
+              onClick={() => setIsSleepModalOpen(true)}
+              className="w-10 h-10 rounded-full flex items-center justify-center bg-white/[0.06] border border-white/10 text-[var(--text-1)] hover:text-indigo-400 hover:border-indigo-500/40 transition-colors tap-feedback"
+              title="Sleep & Recovery Optimizer"
+              aria-label="Sleep & Recovery Optimizer"
+            >
+              <BedDouble className="w-4 h-4 text-indigo-400" />
+            </button>
             <button 
               type="button"
               onClick={() => onNavigate('settings')}
@@ -658,6 +673,31 @@ export const DashboardScreen: React.FC<DashboardScreenProps> = ({
             </button>
           </div>
         </div>
+      )}
+
+      {/* Daily Hydration Tracker */}
+      {!isEditMode && (
+        <HydrationCard
+          onRefresh={onRefresh}
+          onToast={(msg) => triggerToast(msg)}
+        />
+      )}
+
+      {/* Daily Sleep & Recovery Optimizer */}
+      {!isEditMode && (
+        <SleepRecoveryCard
+          onOpenModal={() => setIsSleepModalOpen(true)}
+        />
+      )}
+
+      {/* Daily Habits Consistency Matrix */}
+      {!isEditMode && (
+        <HabitsConsistencyCard
+          habits={state.habits || []}
+          habitEntries={state.habitEntries || []}
+          today={today}
+          onRefresh={onRefresh}
+        />
       )}
 
       {/* ======================================================== */}
@@ -810,6 +850,14 @@ export const DashboardScreen: React.FC<DashboardScreenProps> = ({
         onClose={() => setIsPresetModalOpen(false)}
         currentPreset={layout.preset}
         onSelectPreset={handleApplyPreset}
+      />
+
+      {/* Sleep & Recovery Optimizer Modal */}
+      <SleepTrackerModal
+        isOpen={isSleepModalOpen}
+        onClose={() => setIsSleepModalOpen(false)}
+        onRefresh={onRefresh}
+        onShowToast={triggerToast}
       />
     </div>
   );

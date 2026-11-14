@@ -1,3 +1,5 @@
+import plugin from 'tailwindcss/plugin';
+
 /** @type {import('tailwindcss').Config} */
 export default {
   content: [
@@ -72,5 +74,11 @@ export default {
       },
     },
   },
-  plugins: [],
-}
+  plugins: [
+    plugin(function({ addVariant }) {
+      addVariant('phone', ['html[data-layout="phone"] &', 'html[data-layout="phone"]&']);
+      addVariant('wide', ['html[data-layout="wide"] &', 'html[data-layout="wide"]&']);
+      addVariant('tablet', ['html[data-layout="tablet"] &', 'html[data-layout="tablet"]&']);
+    }),
+  ],
+};
