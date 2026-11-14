@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/icon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#04070A" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <link rel="manifest" href="/manifest.json" />
+    <title>GreenDream — Personal Life Management</title>
+    <!-- Self-hosted typography (offline-ready, zero CDN dependency) -->
+    <!-- PRE-PAINT RESPONSIVE LAYOUT INIT (0ms FOUC prevention) -->
+    <script>
+      (function() {
+        try {
+          var raw = localStorage.getItem('greendream_v1_3_storage') || localStorage.getItem('greendream_state_v1');
+          var mode = 'auto';
+          if (raw) {
+            var parsed = JSON.parse(raw);
+            if (parsed && parsed.settings && parsed.settings.display_mode) {
+              mode = parsed.settings.display_mode;
+            }
+            if (parsed && parsed.settings && parsed.settings.accent) {
+              document.documentElement.setAttribute('data-accent', parsed.settings.accent);
+            }
+          }
+          var w = window.innerWidth || document.documentElement.clientWidth || 390;
+          var eff = 'phone';
+          if (mode === 'tablet') {
+            eff = w >= 1000 ? 'tablet' : (w >= 600 ? 'wide' : 'phone');
+          } else if (mode === 'wide') {
+            eff = w >= 600 ? 'wide' : 'phone';
+          } else if (mode === 'phone') {
+            eff = 'phone';
+          } else {
+            eff = w >= 1000 ? 'tablet' : (w >= 600 ? 'wide' : 'phone');
+          }
+          document.documentElement.setAttribute('data-layout', eff);
+        } catch (e) {
+          document.documentElement.setAttribute('data-layout', 'phone');
+        }
+      })();
+    </script>
+  </head>
+  <body class="antialiased bg-[var(--color-bg)] text-[var(--color-text-primary)]">
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

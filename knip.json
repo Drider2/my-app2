@@ -1,0 +1,11 @@
+{
+  "$schema": "https://unpkg.com/knip@5/overview.json",
+  "project": [
+    "src/**/*.{ts,tsx}",
+    "server/**/*.js"
+  ],
+  "ignore": [
+    "scripts/**",
+    ".agents/**"
+  ]
+}
