@@ -1,6 +1,6 @@
 import React from 'react';
 import { ArrowUpRight, ArrowDownRight, Sparkles, PlusCircle } from 'lucide-react';
-import { GlassCard, AccentChip } from '../glass';
+import { Card, AccentChip } from '../ui';
 import { HatchedBar } from './HatchedBar';
 import { DeltaChipValue, formatMoneyParts } from '../../services/moneyDerivedStats';
 import { useTranslation } from '../../services/i18n';
@@ -41,7 +41,7 @@ export const LeftBalanceHeroCard: React.FC<LeftBalanceHeroCardProps> = ({
   const isOverBudget = budgetMinor !== null && spentMinor > budgetMinor;
 
   return (
-    <GlassCard className={`p-4 sm:p-5 relative overflow-hidden ${className}`}>
+    <Card className={`p-4 sm:p-5 relative overflow-hidden ${className}`}>
       {/* Background ambient light */}
       <div
         className="absolute -top-12 -start-12 w-36 h-36 rounded-full pointer-events-none blur-3xl opacity-20"
@@ -135,6 +135,6 @@ export const LeftBalanceHeroCard: React.FC<LeftBalanceHeroCardProps> = ({
           </button>
         </div>
       )}
-    </GlassCard>
+    </Card>
   );
 };

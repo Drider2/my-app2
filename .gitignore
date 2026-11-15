@@ -3,13 +3,16 @@ node_modules/
 .pnp
 .pnp.js
 
-# Production build outputs
+# Build and production outputs
 dist/
 dist-ssr/
+build/
+.next/
+.cache/
 .vite/
 *.local
 
-# Android build outputs & binaries
+# Android & native build outputs & binaries
 android/app/build/
 android/.gradle/
 android/build/
@@ -17,23 +20,48 @@ android/captures/
 *.apk
 *.aab
 
+# Python / Virtualenvs
+venv/
+.venv/
+env/
+__pycache__/
+*.pyc
+
 # Local environment & secrets
 .env
 .env.local
 .env.*.local
-.vault.key
+*.key
+*.pem
+*.vault*
 .vault_keys.json
 .sync_vault.json
 
 # Screenshots, recordings & heavy assets
 screenshots/
+videos/
+*.mp4
+*.mov
+*.avi
 *.log
 *.zip
 *.rar
+*.tar*
+*.7z
 cloudflared*
 deploy_staging/
 active_tunnel_url.txt
 tunnel.log
+
+# Databases & backups
+databases/
+*.sqlite
+*.db
+backups/
+*.bak
+temp/
+tmp/
+*.tmp
 
 # Editor & OS files
 .vscode/
@@ -41,6 +69,10 @@ tunnel.log
 .DS_Store
 Thumbs.db
 
-# Deployment caches
+# Agent skills & Observability artifacts
+.agents/
+AGENT_LOG.md
+
+# Deployment platform caches
 .vercel/
 .netlify/

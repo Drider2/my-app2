@@ -41,7 +41,7 @@ import { applyTheme, applyAccent, ACCENT_PRESETS } from '../services/themeServic
 import { DailyProgressService } from '../services/dailyProgressService';
 import { AppThemeMode, AccentPreset, DailyProgressSettings, AppModulesConfig, DEFAULT_APP_MODULES, DisplayMode } from '../types';
 import { LayoutService, computeEffectiveLayout, isLayoutDowngraded, getDowngradeKey, getCurrentViewportWidth } from '../services/layoutService';
-import { GlassCard, GlassChip, AccentChip } from '../components/glass';
+import { Card, Chip, AccentChip } from '../components/ui';
 import { RingProgress } from '../components/charts';
 import { AllocationManagerView } from '../components/finance/AllocationManagerView';
 import { HermesSettingsView } from '../components/ai/HermesSettingsView';
@@ -156,12 +156,36 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ onRefresh, onBac
     };
   }, [changeCount, onBack]);
 
-  // Top-left back button handler with guard
+  // Reference to current draft snapshot for guaranteed unmount flush
+  const draftRef = useRef(draftSnapshot);
+  draftRef.current = draftSnapshot;
+
+  // Flush on unmount to ensure zero data loss when switching screens
+  useEffect(() => {
+    return () => {
+      SettingsDiffService.commitSnapshot(draftRef.current);
+    };
+  }, []);
+
+  // Safe atomic auto-commit helper: saves immediately to storage & cloud
+  const commitChange = (updater: (prev: AppSettingsSnapshot) => AppSettingsSnapshot) => {
+    setDraftSnapshot(prev => {
+      const updated = updater(prev);
+      setPreviousSnapshotForUndo(SettingsDiffService.cloneSnapshot(savedSnapshot));
+      setSavedSnapshot(SettingsDiffService.cloneSnapshot(updated));
+      SettingsDiffService.commitSnapshot(updated);
+      setIsUndoToastVisible(true);
+      setUndoToastMessage(t('settings.settingsSaved', 'Settings saved.'));
+      return updated;
+    });
+    onRefresh();
+  };
+
+  // Top-left back button handler with auto-save
   const handleTopBack = () => {
-    if (changeCount > 0) {
-      setPendingNavAction(() => onBack);
-      setIsDiscardDialogOpen(true);
-    } else if (onBack) {
+    SettingsDiffService.commitSnapshot(draftRef.current);
+    setSavedSnapshot(SettingsDiffService.cloneSnapshot(draftRef.current));
+    if (onBack) {
       onBack();
     }
   };
@@ -750,7 +774,7 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ onRefresh, onBac
           </div>
 
           {/* Live Preview Card */}
-          <GlassCard className="mt-3 p-3.5 flex items-center justify-between gap-3">
+          <Card className="mt-3 p-3.5 flex items-center justify-between gap-3">
             <div className="flex items-center gap-3 min-w-0">
               <RingProgress
                 variant="mini"
@@ -779,7 +803,7 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ onRefresh, onBac
                 Glow
               </button>
             </div>
-          </GlassCard>
+          </Card>
         </div>
 
         {/* -------------------------------------------------------- */}
@@ -1174,7 +1198,7 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ onRefresh, onBac
             <div
               onClick={() => {
                 Haptics.tick();
-                setDraftSnapshot(prev => ({
+                commitChange(prev => ({
                   ...prev,
                   flame: { ...prev.flame, showTenDayWords: !prev.flame.showTenDayWords },
                 }));
@@ -1200,7 +1224,7 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ onRefresh, onBac
             <div
               onClick={() => {
                 Haptics.tick();
-                setDraftSnapshot(prev => ({
+                commitChange(prev => ({
                   ...prev,
                   flame: { ...prev.flame, showNumber: !prev.flame.showNumber },
                 }));
@@ -1226,7 +1250,7 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ onRefresh, onBac
             <div
               onClick={() => {
                 Haptics.tick();
-                setDraftSnapshot(prev => ({
+                commitChange(prev => ({
                   ...prev,
                   flame: { ...prev.flame, shareWithHermes: !prev.flame.shareWithHermes },
                 }));

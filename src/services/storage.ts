@@ -1378,6 +1378,7 @@ class LocalStorageDB {
   private state: StorageState;
   private saveTimeout: any = null;
   private isSavePending: boolean = false;
+  private hasUnsyncedChanges: boolean = false;
   private syncStatus: 'idle' | 'saving' | 'saved' | 'error' = 'idle';
   private syncError: string | null = null;
   private lastSavedAt: number | null = null;
@@ -1401,20 +1402,6 @@ class LocalStorageDB {
             }
           } catch {}
         }
-      });
-
-      // Internal sync: re-read state if external writer dispatches update event
-      window.addEventListener('greendream_state_updated', () => {
-        try {
-          const raw = localStorage.getItem(STORAGE_KEY);
-          if (raw) {
-            const parsed = JSON.parse(raw);
-            if (parsed && typeof parsed === 'object' && parsed.version) {
-              this.state = parsed;
-              this.scheduleServerSync();
-            }
-          }
-        } catch {}
       });
 
       // Refocus sync: pull latest changes whenever user switches back to tab
@@ -1647,6 +1634,9 @@ class LocalStorageDB {
         if (parsed.categories === undefined || !Array.isArray(parsed.categories) || parsed.categories.length === 0) {
           parsed.categories = seed.categories;
         }
+        if (!parsed.last_modified) {
+          parsed.last_modified = Date.now();
+        }
         return parsed;
       }
     } catch (e) {
@@ -1697,19 +1687,19 @@ class LocalStorageDB {
       clearTimeout(this.saveTimeout);
       this.saveTimeout = null;
     }
-    if (this.serverSyncTimeout) {
-      clearTimeout(this.serverSyncTimeout);
-      this.serverSyncTimeout = null;
-    }
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(this.state));
       this.isSavePending = false;
-      // Guaranteed background sync on page close/navigate using sendBeacon
-      if (typeof navigator !== 'undefined' && navigator.sendBeacon) {
+      // Guaranteed background sync on page close/navigate using fetch with keepalive
+      if (typeof window !== 'undefined' && typeof fetch !== 'undefined') {
         const serverUrl = this.resolveServerUrl();
         if (!serverUrl.includes('netlify.app')) {
-          const payload = JSON.stringify({ state: this.state });
-          navigator.sendBeacon(`${serverUrl}/api/state`, payload);
+          fetch(`${serverUrl}/api/state`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ state: this.state }),
+            keepalive: true,
+          }).catch(() => {});
         }
       }
     } catch (e) {
@@ -1764,6 +1754,7 @@ class LocalStorageDB {
   public updateState(updater: (draft: StorageState) => void): StorageState {
     updater(this.state);
     this.state.last_modified = Date.now();
+    this.hasUnsyncedChanges = true;
     // 1. Immediate synchronous persistence to localStorage
     this.saveState(this.state, true);
     // 2. Notify all UI subscribers
@@ -1785,6 +1776,14 @@ class LocalStorageDB {
 
   public async pullFromServer(): Promise<boolean> {
     if (typeof window === 'undefined' || !this.isServerSyncAvailable()) return false;
+
+    // SAFETY RULE 1: Never overwrite uncommitted or pending local changes!
+    if (this.hasUnsyncedChanges) {
+      console.log('[SYNC] Local changes are pending sync; pushing to server instead of pulling');
+      this.syncToServer();
+      return true;
+    }
+
     try {
       const serverUrl = this.resolveServerUrl();
       const res = await fetch(`${serverUrl}/api/state`, {
@@ -1799,15 +1798,10 @@ class LocalStorageDB {
       const localModified = this.state.last_modified || 0;
       const serverModified = serverState.last_modified || 0;
 
-      const isLocalFresh = (!this.state.transactions || this.state.transactions.length === 0) &&
-                           (!this.state.journalEntries || this.state.journalEntries.length === 0);
-
-      const isServerHasData = (serverState.transactions && serverState.transactions.length > 0) ||
-                              (serverState.journalEntries && serverState.journalEntries.length > 0) ||
-                              (serverState.habits && serverState.habits.length > 0);
-
-      if (serverModified > localModified || (isLocalFresh && isServerHasData)) {
-        console.log('[SYNC] Server state is newer or local is fresh; synchronizing to local state');
+      // SAFETY RULE 2: Only overwrite local state if the server is strictly newer
+      // AND local state does NOT have unacknowledged local changes!
+      if (serverModified > localModified && !this.hasUnsyncedChanges) {
+        console.log('[SYNC] Server state is newer; synchronizing to local state');
         this.state = serverState;
         this.saveState(serverState, true);
         this.notifyListeners();
@@ -1815,7 +1809,7 @@ class LocalStorageDB {
         if (this.savedStatusTimeout) clearTimeout(this.savedStatusTimeout);
         this.savedStatusTimeout = setTimeout(() => this.setSyncStatus('idle'), 2000);
         return true;
-      } else if (localModified > serverModified && !isLocalFresh) {
+      } else if (localModified > serverModified) {
         console.log('[SYNC] Local state is newer; synchronizing to cloud database');
         this.syncToServer();
       }
@@ -1829,6 +1823,7 @@ class LocalStorageDB {
   public async syncToServer(retryCount = 0): Promise<void> {
     if (typeof window === 'undefined') return;
     if (!this.isServerSyncAvailable()) {
+      this.hasUnsyncedChanges = false;
       this.setSyncStatus('saved');
       if (this.savedStatusTimeout) clearTimeout(this.savedStatusTimeout);
       this.savedStatusTimeout = setTimeout(() => {
@@ -1846,7 +1841,12 @@ class LocalStorageDB {
       });
       if (res.status === 404) {
         // Purely static deployment (no backend) - local storage is the source of truth
-        this.setSyncStatus('idle');
+        this.hasUnsyncedChanges = false;
+        this.setSyncStatus('saved');
+        if (this.savedStatusTimeout) clearTimeout(this.savedStatusTimeout);
+        this.savedStatusTimeout = setTimeout(() => {
+          if (this.syncStatus === 'saved') this.setSyncStatus('idle');
+        }, 1500);
         return;
       }
       if (!res.ok) {
@@ -1854,23 +1854,24 @@ class LocalStorageDB {
       }
       const data = await res.json();
       if (data.success) {
+        this.hasUnsyncedChanges = false;
         this.setSyncStatus('saved');
         if (this.savedStatusTimeout) clearTimeout(this.savedStatusTimeout);
         this.savedStatusTimeout = setTimeout(() => {
           if (this.syncStatus === 'saved') {
             this.setSyncStatus('idle');
           }
-        }, 2500);
+        }, 2000);
       } else {
         throw new Error(data.error || 'Sync rejected');
       }
     } catch (err: any) {
-      if (retryCount < 3) {
+      if (retryCount < 4) {
         const delay = Math.pow(2, retryCount) * 1000;
         setTimeout(() => this.syncToServer(retryCount + 1), delay);
       } else {
         console.warn('[SYNC] Sync failed after retries:', err.message);
-        this.setSyncStatus('error', err.message || 'Network sync failed');
+        this.setSyncStatus('error', err.message || 'Network sync failed — saved locally');
       }
     }
   }

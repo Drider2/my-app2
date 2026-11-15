@@ -1,13 +1,13 @@
 import React from 'react';
 
-interface GlassCardProps extends React.HTMLAttributes<HTMLDivElement> {
+export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode;
   className?: string;
   onClick?: () => void;
   variant?: 'default' | 'tile';
 }
 
-export const GlassCard: React.FC<GlassCardProps> = ({
+export const Card: React.FC<CardProps> = ({
   children,
   className = '',
   onClick,
@@ -29,4 +29,8 @@ export const GlassCard: React.FC<GlassCardProps> = ({
   );
 };
 
-export default GlassCard;
+export const GlassTile: React.FC<CardProps> = (props) => (
+  <Card variant="tile" {...props} />
+);
+
+export default Card;

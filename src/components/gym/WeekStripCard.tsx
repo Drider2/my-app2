@@ -1,6 +1,6 @@
 import React from 'react';
 import { Check } from 'lucide-react';
-import { GlassCard } from '../glass';
+import { Card } from '../ui';
 import { WeekDayStripItem } from '../../services/gymDerivedStats';
 
 interface WeekStripCardProps {
@@ -15,7 +15,7 @@ export const WeekStripCard: React.FC<WeekStripCardProps> = ({
   className = '',
 }) => {
   return (
-    <GlassCard className={`p-[14px_12px] ${className}`}>
+    <Card className={`p-[14px_12px] ${className}`}>
       <div className="grid grid-cols-7 gap-1 sm:gap-2 text-center" role="group" aria-label="Current week workout strip">
         {days.map((day) => {
           const isDone = day.isDone;
@@ -83,7 +83,7 @@ export const WeekStripCard: React.FC<WeekStripCardProps> = ({
           );
         })}
       </div>
-    </GlassCard>
+    </Card>
   );
 };
 

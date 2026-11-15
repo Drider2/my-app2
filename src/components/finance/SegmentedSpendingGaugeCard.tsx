@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Share2, ChevronLeft, ChevronRight, AlertCircle, Check } from 'lucide-react';
-import { GlassCard } from '../glass';
+import { Card } from '../ui';
 import {
   CategorySpendBreakdown,
   calculateGaugeSegments,
@@ -94,7 +94,7 @@ export const SegmentedSpendingGaugeCard: React.FC<SegmentedSpendingGaugeCardProp
   const arcPath = 'M 30 120 A 90 90 0 0 1 210 120';
 
   return (
-    <GlassCard className={`p-4 sm:p-5 relative overflow-hidden ${className}`}>
+    <Card className={`p-4 sm:p-5 relative overflow-hidden ${className}`}>
       {/* Header */}
       <div className="flex items-center justify-between mb-2">
         <h3 className="text-[16px] font-medium text-[var(--text-1)]">
@@ -280,6 +280,6 @@ export const SegmentedSpendingGaugeCard: React.FC<SegmentedSpendingGaugeCardProp
           {t('finance.noSpendingRecorded', 'No spending recorded')}
         </p>
       )}
-    </GlassCard>
+    </Card>
   );
 };

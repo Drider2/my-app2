@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Lock, Eye, EyeOff, ShieldCheck, KeyRound, AlertCircle, Sparkles } from 'lucide-react';
-import { verifyMasterPassword, getLockoutSecondsRemaining, DEFAULT_MASTER_PASSWORD } from '../../services/authService';
+import { verifyMasterPassword, getLockoutSecondsRemaining } from '../../services/authService';
 
 interface MasterLoginGateProps {
   onUnlock: () => void;
@@ -157,10 +157,10 @@ export const MasterLoginGate: React.FC<MasterLoginGateProps> = ({ onUnlock }) =>
           </button>
         </form>
 
-        {/* Quick hint for initial access */}
+        {/* Secure vault access notice */}
         <div className="mt-5 pt-4 border-t border-white/5 text-center">
           <p className="text-[11px] text-white/40">
-            Default password: <code className="bg-white/10 px-1.5 py-0.5 rounded text-emerald-400 font-mono">greendream2026</code>
+            Encrypted client-side with SHA-256 vault protection
           </p>
         </div>
       </div>

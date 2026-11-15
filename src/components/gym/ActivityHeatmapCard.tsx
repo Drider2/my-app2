@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { GlassCard } from '../glass';
+import { Card } from '../ui';
 import { HeatmapCell } from '../../services/gymDerivedStats';
 import { useTranslation } from '../../services/i18n';
 
@@ -48,7 +48,7 @@ export const ActivityHeatmapCard: React.FC<ActivityHeatmapCardProps> = ({
   };
 
   return (
-    <GlassCard className={`space-y-4 p-4 sm:p-5 ${className}`}>
+    <Card className={`space-y-4 p-4 sm:p-5 ${className}`}>
       {/* Title & Subtitle */}
       <div>
         <h2 className="text-[16px] font-medium text-[var(--text-1)] tracking-tight">
@@ -147,7 +147,7 @@ export const ActivityHeatmapCard: React.FC<ActivityHeatmapCardProps> = ({
         </div>
         <span>{t('gym.more', 'More')}</span>
       </div>
-    </GlassCard>
+    </Card>
   );
 };
 

@@ -8,7 +8,7 @@ import { OnboardingModal } from './components/onboarding/OnboardingModal';
 import { HermesChatModal } from './components/ai/HermesChatModal';
 import { VoiceConversationModal } from './components/voice/VoiceConversationModal';
 import { FlameTenDayModal } from './components/flame/FlameTenDayModal';
-import { ScreenSkeleton } from './components/glass/GlassSkeleton';
+import { ScreenSkeleton } from './components/ui/Skeleton';
 import { MasterLoginGate } from './components/auth/MasterLoginGate';
 import { isAppAuthenticated } from './services/authService';
 import { initTheme } from './services/themeService';

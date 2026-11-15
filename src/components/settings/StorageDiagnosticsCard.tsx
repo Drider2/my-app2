@@ -29,14 +29,21 @@ import {
 import { db } from '../../services/storage';
 import { Haptics } from '../../services/haptics';
 
+const LIVE_TUNNEL_URL = typeof window !== 'undefined' ? window.location.origin : 'https://greendream-app-live.netlify.app';
+const MASTER_PASSWORD = 'greendream2026';
+
 interface StorageDiagnosticsCardProps {
   onExportBackup: () => void;
   onTriggerImport: () => void;
   onRefresh: () => void;
 }
 
-const LIVE_TUNNEL_URL = 'https://reg-pontiac-fuji-firmware.trycloudflare.com';
-const MASTER_PASSWORD = 'greendream2026';
+const getLiveUrl = () => {
+  if (typeof window !== 'undefined' && window.location.origin) {
+    return window.location.origin;
+  }
+  return 'https://greendream-app-live.netlify.app';
+};
 
 export const StorageDiagnosticsCard: React.FC<StorageDiagnosticsCardProps> = ({
   onExportBackup,

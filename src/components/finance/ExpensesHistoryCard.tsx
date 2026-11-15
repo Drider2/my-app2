@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Share2, ExternalLink, PlusCircle, Check } from 'lucide-react';
-import { GlassCard } from '../glass';
+import { Card } from '../ui';
 import { RecentExpenseItem, formatMoneyParts } from '../../services/moneyDerivedStats';
 import { Transaction } from '../../types';
 import { useTranslation } from '../../services/i18n';
@@ -51,7 +51,7 @@ export const ExpensesHistoryCard: React.FC<ExpensesHistoryCardProps> = ({
   };
 
   return (
-    <GlassCard className={`p-4 sm:p-5 relative overflow-hidden ${className}`}>
+    <Card className={`p-4 sm:p-5 relative overflow-hidden ${className}`}>
       {/* Header: Title + See all > link */}
       <div className="flex items-center justify-between mb-3">
         <h3 className="text-[16px] font-medium text-[var(--text-1)]">
@@ -147,6 +147,6 @@ export const ExpensesHistoryCard: React.FC<ExpensesHistoryCardProps> = ({
           })}
         </div>
       )}
-    </GlassCard>
+    </Card>
   );
 };

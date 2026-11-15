@@ -160,71 +160,122 @@ class AppLifecycleLoopManager {
       }
 
       // =======================================================
-      // 2. DATABASE SELF-HEALING & SANITIZATION
+      // 2. DATABASE SELF-HEALING & SANITIZATION (Only if needed!)
       // =======================================================
-      db.updateState(draft => {
-        // A. Integer minor unit arithmetic repair
-        for (const t of (draft.transactions || [])) {
-          if (t.amount_minor !== Math.round(t.amount_minor || 0)) {
-            t.amount_minor = Math.round(t.amount_minor || 0);
-            stateModified = true;
-            repairedIssues.push(`Sanitized floating transaction minor amount for ID ${t.id}`);
-          }
-        }
+      const current = db.getState();
+      let needsRepair = false;
 
-        for (const cat of (draft.categories || [])) {
+      // Check transactions
+      for (const t of (current.transactions || [])) {
+        if (t.amount_minor !== Math.round(t.amount_minor || 0)) {
+          needsRepair = true;
+          break;
+        }
+      }
+      if (!needsRepair) {
+        for (const cat of (current.categories || [])) {
           if (cat.amount_minor !== Math.round(cat.amount_minor || 0)) {
-            cat.amount_minor = Math.round(cat.amount_minor || 0);
-            stateModified = true;
-            repairedIssues.push(`Sanitized floating category budget amount for ${cat.name}`);
+            needsRepair = true;
+            break;
           }
         }
-
-        if (draft.savingsAccount) {
-          if (draft.savingsAccount.current_balance_minor !== Math.round(draft.savingsAccount.current_balance_minor || 0)) {
-            draft.savingsAccount.current_balance_minor = Math.round(draft.savingsAccount.current_balance_minor || 0);
-            stateModified = true;
-          }
+      }
+      if (!needsRepair && current.savingsAccount) {
+        if (current.savingsAccount.current_balance_minor !== Math.round(current.savingsAccount.current_balance_minor || 0)) {
+          needsRepair = true;
         }
-
-        // B. Reconcile loans repayment integrity and status
-        for (const loan of (draft.loans || [])) {
+      }
+      if (!needsRepair) {
+        for (const loan of (current.loans || [])) {
           if (loan.deleted_at) continue;
-
-          loan.amount_minor = Math.round(loan.amount_minor || 0);
+          if (loan.amount_minor !== Math.round(loan.amount_minor || 0)) { needsRepair = true; break; }
           const repayments = (loan.repayments || []).filter(r => !r.deleted_at);
           let totalRepaid = 0;
-
           for (const rep of repayments) {
-            rep.amount_minor = Math.round(rep.amount_minor || 0);
-            totalRepaid += rep.amount_minor;
+            if (rep.amount_minor !== Math.round(rep.amount_minor || 0)) { needsRepair = true; break; }
+            totalRepaid += Math.round(rep.amount_minor || 0);
           }
-
           const remaining = Math.max(0, loan.amount_minor - totalRepaid);
           const expectedStatus = remaining === 0 
             ? 'fully_repaid' 
             : totalRepaid > 0 
               ? 'partially_repaid' 
               : 'not_repaid';
-
           if (loan.status !== expectedStatus) {
-            loan.status = expectedStatus;
-            loan.updated_at = Date.now();
-            stateModified = true;
-            repairedIssues.push(`Reconciled loan debt status for ${loan.borrower_name} to ${expectedStatus}`);
+            needsRepair = true;
+            break;
           }
         }
+      }
+      if (!needsRepair && (!current.disciplineEntries || !current.assistantNotices)) {
+        needsRepair = true;
+      }
 
-        // C. Clean orphan/empty entries
-        if (!draft.disciplineEntries) {
-          draft.disciplineEntries = [];
-          stateModified = true;
-        }
-        if (!draft.assistantNotices) {
-          draft.assistantNotices = [];
-          stateModified = true;
-        }
-      });
+      if (needsRepair) {
+        db.updateState(draft => {
+          // A. Integer minor unit arithmetic repair
+          for (const t of (draft.transactions || [])) {
+            if (t.amount_minor !== Math.round(t.amount_minor || 0)) {
+              t.amount_minor = Math.round(t.amount_minor || 0);
+              stateModified = true;
+              repairedIssues.push(`Sanitized floating transaction minor amount for ID ${t.id}`);
+            }
+          }
+
+          for (const cat of (draft.categories || [])) {
+            if (cat.amount_minor !== Math.round(cat.amount_minor || 0)) {
+              cat.amount_minor = Math.round(cat.amount_minor || 0);
+              stateModified = true;
+              repairedIssues.push(`Sanitized floating category budget amount for ${cat.name}`);
+            }
+          }
+
+          if (draft.savingsAccount) {
+            if (draft.savingsAccount.current_balance_minor !== Math.round(draft.savingsAccount.current_balance_minor || 0)) {
+              draft.savingsAccount.current_balance_minor = Math.round(draft.savingsAccount.current_balance_minor || 0);
+              stateModified = true;
+            }
+          }
+
+          // B. Reconcile loans repayment integrity and status
+          for (const loan of (draft.loans || [])) {
+            if (loan.deleted_at) continue;
+
+            loan.amount_minor = Math.round(loan.amount_minor || 0);
+            const repayments = (loan.repayments || []).filter(r => !r.deleted_at);
+            let totalRepaid = 0;
+
+            for (const rep of repayments) {
+              rep.amount_minor = Math.round(rep.amount_minor || 0);
+              totalRepaid += rep.amount_minor;
+            }
+
+            const remaining = Math.max(0, loan.amount_minor - totalRepaid);
+            const expectedStatus = remaining === 0 
+              ? 'fully_repaid' 
+              : totalRepaid > 0 
+                ? 'partially_repaid' 
+                : 'not_repaid';
+
+            if (loan.status !== expectedStatus) {
+              loan.status = expectedStatus;
+              loan.updated_at = Date.now();
+              stateModified = true;
+              repairedIssues.push(`Reconciled loan debt status for ${loan.borrower_name} to ${expectedStatus}`);
+            }
+          }
+
+          // C. Clean orphan/empty entries
+          if (!draft.disciplineEntries) {
+            draft.disciplineEntries = [];
+            stateModified = true;
+          }
+          if (!draft.assistantNotices) {
+            draft.assistantNotices = [];
+            stateModified = true;
+          }
+        });
+      }
 
       // =======================================================
       // 3. DETERMINISTIC RULES ENGINE AUDIT

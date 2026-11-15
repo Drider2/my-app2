@@ -63,7 +63,7 @@ import { useTranslation } from '../services/i18n';
 import { useCountUp, triggerHaptic } from '../services/motion';
 import { HermesLearningService } from '../services/hermesLearningService';
 import { RingProgress, PrayerTracker, SafeToSpendGauge, StreakMilestoneBadge, PillBars } from '../components/charts';
-import { GlassCard, GlassChip, GlassTile, AccentChip } from '../components/glass';
+import { Card, Chip, Tile, AccentChip } from '../components/ui';
 import { FlameLogo } from '../components/flame/FlameLogo';
 
 interface DashboardScreenProps {

@@ -1,13 +1,13 @@
 import React from 'react';
 
-interface GlassChipProps extends React.HTMLAttributes<HTMLDivElement> {
+export interface ChipProps extends React.HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode;
   className?: string;
   onClick?: () => void;
   active?: boolean;
 }
 
-export const GlassChip: React.FC<GlassChipProps> = ({
+export const Chip: React.FC<ChipProps> = ({
   children,
   className = '',
   onClick,
@@ -29,7 +29,7 @@ export const GlassChip: React.FC<GlassChipProps> = ({
   );
 };
 
-export const GlassTile: React.FC<React.HTMLAttributes<HTMLDivElement>> = ({
+export const Tile: React.FC<React.HTMLAttributes<HTMLDivElement>> = ({
   children,
   className = '',
   onClick,
@@ -46,4 +46,4 @@ export const GlassTile: React.FC<React.HTMLAttributes<HTMLDivElement>> = ({
   );
 };
 
-export default GlassChip;
+export default Chip;

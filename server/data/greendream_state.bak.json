@@ -12,7 +12,7 @@
     "journal_lock_enabled": false,
     "theme": "dark",
     "language": "en",
-    "accent": "cyan",
+    "accent": "lime",
     "font_size_scale": 1,
     "ai": {
       "provider": "gemini",
@@ -24,7 +24,7 @@
       "direct_mode": true,
       "connection_status": "connected",
       "connection_error": null,
-      "last_tested_at": 1794635657120,
+      "last_tested_at": 1794609859973,
       "response_length": "balanced",
       "permissions": {
         "finance_read": true,
@@ -39,9 +39,20 @@
         "completion_tokens": 0,
         "rate_limit_errors": 0,
         "today_requests": 0,
-        "today_date": "2026-11-14",
+        "today_date": "2026-11-13",
         "free_tier_status": "active"
-      }
+      },
+      "apiKey": "AQ.Ab8RN6IDDgyk3z3ds_ykETLaBuE1_yOVABwhF5V-6JUOLzMmTg",
+      "hermesMode": "read_data",
+      "shareContext": {
+        "prayer": true,
+        "finance": true,
+        "gym": true,
+        "calendar": true,
+        "maintenance": true,
+        "journal": false
+      },
+      "hermesServerUrl": ""
     },
     "voice": {
       "enabled": true,
@@ -59,14 +70,14 @@
     },
     "flame": {
       "enabled": true,
-      "startDate": "2026-11-14",
+      "startDate": "2026-11-13",
       "relapses": [],
       "goalDays": 30,
       "showNumber": true,
       "celebrations": {
-        "streakKey": "2026-11-14",
+        "streakKey": "2026-11-13",
         "done": [],
-        "lastSeenDay": "2026-11-14"
+        "lastSeenDay": "2026-11-15"
       },
       "phraseHistory": [],
       "savedPhrases": [],
@@ -113,8 +124,8 @@
           "weight": 0.5
         }
       ],
-      "created_at": 1794635657120,
-      "updated_at": 1794635657120,
+      "created_at": 1794609859973,
+      "updated_at": 1794609859973,
       "deleted_at": null
     },
     {
@@ -133,8 +144,8 @@
           "weight": 0.5
         }
       ],
-      "created_at": 1794635657120,
-      "updated_at": 1794635657120,
+      "created_at": 1794609859973,
+      "updated_at": 1794609859973,
       "deleted_at": null
     },
     {
@@ -158,8 +169,8 @@
           "weight": 0.5
         }
       ],
-      "created_at": 1794635657120,
-      "updated_at": 1794635657120,
+      "created_at": 1794609859973,
+      "updated_at": 1794609859973,
       "deleted_at": null
     },
     {
@@ -178,8 +189,8 @@
           "weight": 0.5
         }
       ],
-      "created_at": 1794635657120,
-      "updated_at": 1794635657120,
+      "created_at": 1794609859973,
+      "updated_at": 1794609859973,
       "deleted_at": null
     }
   ],
@@ -199,8 +210,8 @@
       "rollover": "reset",
       "alert_threshold": 0.8,
       "color": "#F59E0B",
-      "created_at": 1794635657122,
-      "updated_at": 1794635657122,
+      "created_at": 1794609859976,
+      "updated_at": 1794609859976,
       "deleted_at": null
     },
     {
@@ -211,8 +222,8 @@
       "rollover": "reset",
       "alert_threshold": 0.8,
       "color": "#3B82F6",
-      "created_at": 1794635657122,
-      "updated_at": 1794635657122,
+      "created_at": 1794609859976,
+      "updated_at": 1794609859976,
       "deleted_at": null
     },
     {
@@ -223,8 +234,8 @@
       "rollover": "reset",
       "alert_threshold": 0.8,
       "color": "#EC4899",
-      "created_at": 1794635657122,
-      "updated_at": 1794635657122,
+      "created_at": 1794609859976,
+      "updated_at": 1794609859976,
       "deleted_at": null
     },
     {
@@ -235,8 +246,8 @@
       "rollover": "reset",
       "alert_threshold": 0.8,
       "color": "#8B5CF6",
-      "created_at": 1794635657122,
-      "updated_at": 1794635657122,
+      "created_at": 1794609859976,
+      "updated_at": 1794609859976,
       "deleted_at": null
     },
     {
@@ -247,8 +258,8 @@
       "rollover": "reset",
       "alert_threshold": 0.8,
       "color": "#10B981",
-      "created_at": 1794635657122,
-      "updated_at": 1794635657122,
+      "created_at": 1794609859976,
+      "updated_at": 1794609859976,
       "deleted_at": null
     },
     {
@@ -259,8 +270,8 @@
       "rollover": "reset",
       "alert_threshold": 0.8,
       "color": "#F97316",
-      "created_at": 1794635657122,
-      "updated_at": 1794635657122,
+      "created_at": 1794609859976,
+      "updated_at": 1794609859976,
       "deleted_at": null
     },
     {
@@ -271,8 +282,8 @@
       "rollover": "reset",
       "alert_threshold": 0.8,
       "color": "#6366F1",
-      "created_at": 1794635657122,
-      "updated_at": 1794635657122,
+      "created_at": 1794609859976,
+      "updated_at": 1794609859976,
       "deleted_at": null
     },
     {
@@ -283,8 +294,8 @@
       "rollover": "reset",
       "alert_threshold": 0.8,
       "color": "#14B8A6",
-      "created_at": 1794635657122,
-      "updated_at": 1794635657122,
+      "created_at": 1794609859976,
+      "updated_at": 1794609859976,
       "deleted_at": null
     },
     {
@@ -295,8 +306,8 @@
       "rollover": "reset",
       "alert_threshold": 0.8,
       "color": "#A6D96A",
-      "created_at": 1794635657122,
-      "updated_at": 1794635657122,
+      "created_at": 1794609859976,
+      "updated_at": 1794609859976,
       "deleted_at": null
     },
     {
@@ -307,35 +318,23 @@
       "rollover": "reset",
       "alert_threshold": 0.9,
       "color": "#38BDF8",
-      "created_at": 1794635657122,
-      "updated_at": 1794635657122,
+      "created_at": 1794609859976,
+      "updated_at": 1794609859976,
       "deleted_at": null
     }
   ],
-  "transactions": [
-    {
-      "id": "tx-audit-1794636228063",
-      "type": "expense",
-      "amount_minor": 350000,
-      "local_date": "2026-11-14",
-      "category_id": "cat-food",
-      "note": "Fresh Organic Groceries 1794636228063",
-      "created_at": 1794636228064,
-      "updated_at": 1794636228064,
-      "deleted_at": null
-    }
-  ],
+  "transactions": [],
   "savingsGoals": [],
   "salarySetting": {
     "monthly_salary_minor": 0,
     "payment_day": 1,
-    "effective_from": "2026-11-14",
+    "effective_from": "2026-11-13",
     "history": []
   },
   "savingsAccount": {
     "current_balance_minor": 0,
     "starting_balance_minor": 0,
-    "starting_date": "2026-11-14",
+    "starting_date": "2026-11-13",
     "notes": "Clean Slate Savings"
   },
   "savingsTransactions": [],
@@ -346,68 +345,14 @@
     "gym_amount_minor": 0,
     "shopping_amount_minor": 0,
     "other_amount_minor": 0,
-    "updated_at": 1794635657121
+    "updated_at": 1794609859975
   },
   "recurringRules": [],
   "journalEntries": [],
   "assistantProposals": [],
   "assistantNotices": [
     {
-      "id": "4cd0f4f1-2446-42f0-a2df-119d7c244abc",
-      "rule_id": "maintenance_due",
-      "title": "Maintenance Due: Cotton Underwear & Socks Pack",
-      "message": "Cotton Underwear & Socks Pack was scheduled for 2026-11-14.",
-      "severity": "high",
-      "status": "new",
-      "related_ids": [
-        "maint-6"
-      ],
-      "options": [
-        {
-          "label": "Mark Done",
-          "action_type": "complete_maintenance",
-          "payload": {
-            "item_id": "maint-6"
-          }
-        },
-        {
-          "label": "Dismiss",
-          "action_type": "dismiss_notice"
-        }
-      ],
-      "created_at": 1794636006002,
-      "updated_at": 1794636006002,
-      "deleted_at": null
-    },
-    {
-      "id": "a7628659-d199-41db-9669-eae52f7fce47",
-      "rule_id": "maintenance_due",
-      "title": "Maintenance Due: Shampoo & Conditioner Refill",
-      "message": "Shampoo & Conditioner Refill was scheduled for 2026-11-08.",
-      "severity": "medium",
-      "status": "new",
-      "related_ids": [
-        "maint-2"
-      ],
-      "options": [
-        {
-          "label": "Mark Done",
-          "action_type": "complete_maintenance",
-          "payload": {
-            "item_id": "maint-2"
-          }
-        },
-        {
-          "label": "Dismiss",
-          "action_type": "dismiss_notice"
-        }
-      ],
-      "created_at": 1794636006002,
-      "updated_at": 1794636006002,
-      "deleted_at": null
-    },
-    {
-      "id": "a218e7cd-4423-4610-bdb5-14e5dcd2a81a",
+      "id": "241d0252-198c-4541-bc7c-a30c0b186c15",
       "rule_id": "maintenance_due",
       "title": "Maintenance Due: Haircut & Beard Trim",
       "message": "Haircut & Beard Trim was scheduled for 2026-11-14.",
@@ -429,8 +374,86 @@
           "action_type": "dismiss_notice"
         }
       ],
-      "created_at": 1794636006002,
-      "updated_at": 1794636006002,
+      "created_at": 1794610808869,
+      "updated_at": 1794610808869,
+      "deleted_at": null
+    },
+    {
+      "id": "afe3e2ad-f633-454a-95f3-aab2cd5d6451",
+      "rule_id": "maintenance_due",
+      "title": "Maintenance Due: Cotton Underwear & Socks Pack",
+      "message": "Cotton Underwear & Socks Pack was scheduled for 2026-11-13.",
+      "severity": "high",
+      "status": "new",
+      "related_ids": [
+        "maint-6"
+      ],
+      "options": [
+        {
+          "label": "Mark Done",
+          "action_type": "complete_maintenance",
+          "payload": {
+            "item_id": "maint-6"
+          }
+        },
+        {
+          "label": "Dismiss",
+          "action_type": "dismiss_notice"
+        }
+      ],
+      "created_at": 1794610658856,
+      "updated_at": 1794610658856,
+      "deleted_at": null
+    },
+    {
+      "id": "13ceda91-c9e9-4ef1-9ec3-9ac335626203",
+      "rule_id": "maintenance_due",
+      "title": "Maintenance Due: Shampoo & Conditioner Refill",
+      "message": "Shampoo & Conditioner Refill was scheduled for 2026-11-08.",
+      "severity": "medium",
+      "status": "new",
+      "related_ids": [
+        "maint-2"
+      ],
+      "options": [
+        {
+          "label": "Mark Done",
+          "action_type": "complete_maintenance",
+          "payload": {
+            "item_id": "maint-2"
+          }
+        },
+        {
+          "label": "Dismiss",
+          "action_type": "dismiss_notice"
+        }
+      ],
+      "created_at": 1794610658856,
+      "updated_at": 1794610658856,
+      "deleted_at": null
+    },
+    {
+      "id": "8556c823-7fd5-4503-8526-d9e609852168",
+      "rule_id": "streak_at_risk",
+      "title": "Daily Progress & Prayers Reminder",
+      "message": "You have 5 prayers pending today. Keep your daily progress score strong!",
+      "severity": "low",
+      "status": "new",
+      "related_ids": [
+        "daily_prayers"
+      ],
+      "options": [
+        {
+          "label": "View Prayers",
+          "action_type": "view_prayers"
+        },
+        {
+          "label": "Dismiss",
+          "action_type": "dismiss_notice"
+        }
+      ],
+      "created_at": 1794609860052,
+      "updated_at": 1794609860052,
       "deleted_at": null
     }
   ],
@@ -441,9 +464,9 @@
       "prayer": "fajr",
       "completed": false,
       "completed_at": null,
-      "local_date": "2026-11-14",
-      "created_at": 1794635657121,
-      "updated_at": 1794635657121,
+      "local_date": "2026-11-13",
+      "created_at": 1794609859975,
+      "updated_at": 1794609859975,
       "deleted_at": null
     },
     {
@@ -451,9 +474,9 @@
       "prayer": "dhuhr",
       "completed": false,
       "completed_at": null,
-      "local_date": "2026-11-14",
-      "created_at": 1794635657121,
-      "updated_at": 1794635657121,
+      "local_date": "2026-11-13",
+      "created_at": 1794609859975,
+      "updated_at": 1794609859975,
       "deleted_at": null
     },
     {
@@ -461,9 +484,9 @@
       "prayer": "asr",
       "completed": false,
       "completed_at": null,
-      "local_date": "2026-11-14",
-      "created_at": 1794635657121,
-      "updated_at": 1794635657121,
+      "local_date": "2026-11-13",
+      "created_at": 1794609859975,
+      "updated_at": 1794609859975,
       "deleted_at": null
     },
     {
@@ -471,9 +494,9 @@
       "prayer": "maghrib",
       "completed": false,
       "completed_at": null,
-      "local_date": "2026-11-14",
-      "created_at": 1794635657121,
-      "updated_at": 1794635657121,
+      "local_date": "2026-11-13",
+      "created_at": 1794609859975,
+      "updated_at": 1794609859975,
       "deleted_at": null
     },
     {
@@ -481,9 +504,109 @@
       "prayer": "isha",
       "completed": false,
       "completed_at": null,
+      "local_date": "2026-11-13",
+      "created_at": 1794609859975,
+      "updated_at": 1794609859975,
+      "deleted_at": null
+    },
+    {
+      "id": "a87ab857-2462-4ae1-bafd-f94bd3619fcf",
       "local_date": "2026-11-14",
-      "created_at": 1794635657121,
-      "updated_at": 1794635657121,
+      "prayer": "fajr",
+      "completed": false,
+      "completed_at": null,
+      "created_at": 1794610808867,
+      "updated_at": 1794610808867,
+      "deleted_at": null
+    },
+    {
+      "id": "8657ecdc-2983-4b31-a05f-b8207d2a4a56",
+      "local_date": "2026-11-14",
+      "prayer": "dhuhr",
+      "completed": false,
+      "completed_at": null,
+      "created_at": 1794610808867,
+      "updated_at": 1794610808867,
+      "deleted_at": null
+    },
+    {
+      "id": "477b1d95-7a47-4f13-ab3c-b3497e0bcf7b",
+      "local_date": "2026-11-14",
+      "prayer": "asr",
+      "completed": false,
+      "completed_at": null,
+      "created_at": 1794610808867,
+      "updated_at": 1794610808867,
+      "deleted_at": null
+    },
+    {
+      "id": "5d33bbcc-3aa1-4424-9c94-d3b17a13bf62",
+      "local_date": "2026-11-14",
+      "prayer": "maghrib",
+      "completed": false,
+      "completed_at": null,
+      "created_at": 1794610808867,
+      "updated_at": 1794610808867,
+      "deleted_at": null
+    },
+    {
+      "id": "af1553cb-5ad7-4946-8860-fa7b4b0a99b3",
+      "local_date": "2026-11-14",
+      "prayer": "isha",
+      "completed": false,
+      "completed_at": null,
+      "created_at": 1794610808867,
+      "updated_at": 1794610808867,
+      "deleted_at": null
+    },
+    {
+      "id": "6285dc3a-c2a6-47a5-a267-3a1e383a9d5f",
+      "local_date": "2026-11-15",
+      "prayer": "fajr",
+      "completed": true,
+      "completed_at": 1794715683924,
+      "created_at": 1794715518674,
+      "updated_at": 1794715683924,
+      "deleted_at": null
+    },
+    {
+      "id": "a69a27c7-6dc7-463d-9bad-22988937b235",
+      "local_date": "2026-11-15",
+      "prayer": "dhuhr",
+      "completed": false,
+      "completed_at": null,
+      "created_at": 1794715518674,
+      "updated_at": 1794715518674,
+      "deleted_at": null
+    },
+    {
+      "id": "cc944471-3478-4ad4-967b-3d95d99b7d5d",
+      "local_date": "2026-11-15",
+      "prayer": "asr",
+      "completed": false,
+      "completed_at": null,
+      "created_at": 1794715518674,
+      "updated_at": 1794715518674,
+      "deleted_at": null
+    },
+    {
+      "id": "f53defbb-5b12-4098-88f4-b2b9ca9fbf5f",
+      "local_date": "2026-11-15",
+      "prayer": "maghrib",
+      "completed": false,
+      "completed_at": null,
+      "created_at": 1794715518674,
+      "updated_at": 1794715518674,
+      "deleted_at": null
+    },
+    {
+      "id": "fd7deec4-6450-4499-adcb-bfa096da867d",
+      "local_date": "2026-11-15",
+      "prayer": "isha",
+      "completed": false,
+      "completed_at": null,
+      "created_at": 1794715518674,
+      "updated_at": 1794715518674,
       "deleted_at": null
     }
   ],
@@ -520,8 +643,8 @@
       "status": "due",
       "notes": "Fade haircut and beard line at Barber Studio",
       "finance_category_id": "cat-personal",
-      "created_at": 1794636005570,
-      "updated_at": 1794636005997,
+      "created_at": 1794610658590,
+      "updated_at": 1794610808867,
       "deleted_at": null
     },
     {
@@ -537,8 +660,8 @@
       "status": "due",
       "notes": "Sulfate-free keratin formula",
       "finance_category_id": "cat-personal",
-      "created_at": 1794636005570,
-      "updated_at": 1794636005997,
+      "created_at": 1794610658590,
+      "updated_at": 1794610658852,
       "deleted_at": null
     },
     {
@@ -554,8 +677,8 @@
       "status": "upcoming",
       "notes": "Soft bristles, hygienic switch",
       "finance_category_id": "cat-personal",
-      "created_at": 1794636005570,
-      "updated_at": 1794636005570,
+      "created_at": 1794610658590,
+      "updated_at": 1794610658590,
       "deleted_at": null
     },
     {
@@ -574,8 +697,8 @@
       "status": "upcoming",
       "notes": "5W-40 Synthetic + OEM oil filter",
       "finance_category_id": "cat-car",
-      "created_at": 1794636005570,
-      "updated_at": 1794636005570,
+      "created_at": 1794610658590,
+      "updated_at": 1794610658590,
       "deleted_at": null
     },
     {
@@ -591,8 +714,8 @@
       "status": "upcoming",
       "notes": "Front ceramic pads wear inspection",
       "finance_category_id": "cat-car",
-      "created_at": 1794636005570,
-      "updated_at": 1794636005570,
+      "created_at": 1794610658590,
+      "updated_at": 1794610658590,
       "deleted_at": null
     },
     {
@@ -601,14 +724,14 @@
       "category": "shopping",
       "estimated_cost_minor": 250000,
       "recurrence_type": "as_needed",
-      "next_reminder_date": "2026-11-14",
+      "next_reminder_date": "2026-11-13",
       "priority": "high",
       "status": "due",
       "is_purchased": false,
       "notes": "Pure breathable cotton trunks and training socks",
       "finance_category_id": "cat-personal",
-      "created_at": 1794636005570,
-      "updated_at": 1794636005997,
+      "created_at": 1794610658590,
+      "updated_at": 1794610658852,
       "deleted_at": null
     },
     {
@@ -624,8 +747,8 @@
       "status": "upcoming",
       "notes": "Gym nutrition recovery",
       "finance_category_id": "cat-gym",
-      "created_at": 1794636005570,
-      "updated_at": 1794636005570,
+      "created_at": 1794610658590,
+      "updated_at": 1794610658590,
       "deleted_at": null
     },
     {
@@ -640,8 +763,8 @@
       "is_purchased": false,
       "notes": "Road running and treadmill cushioning",
       "finance_category_id": "cat-personal",
-      "created_at": 1794636005570,
-      "updated_at": 1794636005570,
+      "created_at": 1794610658590,
+      "updated_at": 1794610658590,
       "deleted_at": null
     }
   ],
@@ -773,7 +896,7 @@
         "order": 16
       }
     ],
-    "updated_at": 1794635657122
+    "updated_at": 1794609859976
   },
   "moduleLayouts": {
     "finance": {
@@ -880,7 +1003,7 @@
           "order": 13
         }
       ],
-      "updated_at": 1794650396209
+      "updated_at": 1794609913356
     },
     "prayers": {
       "moduleId": "prayers",
@@ -916,7 +1039,7 @@
           "order": 3
         }
       ],
-      "updated_at": 1794650396707
+      "updated_at": 1794609918008
     }
   },
   "allocationPlans": [],
@@ -941,9 +1064,24 @@
   },
   "shoppingItems": [],
   "fastingEntries": [],
-  "last_modified": 1794651318536,
   "hydrationLogs": {},
   "dailyWaterTargetMl": 2500,
-  "hermesChats": [],
-  "hermesNotes": []
+  "hermesChats": [
+    {
+      "id": "450433a8-22e0-43b1-a110-729852da7570",
+      "title": "How much did I spend this week...",
+      "created_at": 1794609886596,
+      "updated_at": 1794610584179,
+      "messages": [
+        {
+          "id": "c28f3c51-f9fc-4813-a658-2392cc7575fa",
+          "role": "user",
+          "content": "How much did I spend this week?",
+          "timestamp": 1794610584178
+        }
+      ]
+    }
+  ],
+  "hermesNotes": [],
+  "last_modified": 1794716439966
 }

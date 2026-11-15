@@ -30,7 +30,7 @@ import { LogWeightModal } from '../components/LogWeightModal';
 import { WorkoutSessionModal } from '../components/WorkoutSessionModal';
 import { TrainingProgram, ProgramTemplateType } from '../types';
 import { RingProgress } from '../components/charts';
-import { AccentChip } from '../components/glass';
+import { AccentChip } from '../components/ui';
 import { 
   WeekStripCard, 
   TodayWorkoutCard, 

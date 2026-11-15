@@ -51,13 +51,33 @@
 
 ---
 
-## Phase 3: Action Plan
-1. **Immediate Auto-Save for Settings (`SettingsScreen.tsx`):**
-   - Save every setting change immediately: when theme, accent, language, fontSize, displayMode, module switches, journal lock, flame, or voice are touched, commit directly to `db.updateState()` and trigger persistent storage sync.
-   - Remove discard modal on navigation away so settings never revert.
-   - Keep undo toast for 10 seconds if user wishes to revert.
-2. **Robust Storage & Sync Protocol (`storage.ts`):**
-   - Track `hasUnsyncedLocalChanges`. Never allow `pullFromServer()` to overwrite local state if local changes have not been confirmed by server or if local `last_modified` >= server `last_modified`.
+## Phase 3: Fixes Implemented & Verified
+1. **Immediate Auto-Save in `SettingsScreen.tsx`:**
+   - Replaced uncommitted `draftSnapshot` paradigm with immediate `commitChange()` calling `db.updateState()`.
+   - Every toggle, theme, accent, language, display mode, module visibility, flame settings, and font scale commits instantly to persistent storage.
+   - Added unmount flush hook using `draftRef` to guarantee zero state loss.
+   - Replaced discard dialog with instant persistence upon tapping back or switching tabs.
+
+2. **Server Sync & Conflict Protection in `storage.ts`:**
+   - Removed destructive `isLocalFresh` heuristic in `pullFromServer()`.
+   - Added `hasUnsyncedLocalChanges` tracking: local state is never overwritten by older server state or default seeds.
+   - Replaced failing `navigator.sendBeacon` (which dropped payloads >64 KB) with `fetch(..., { keepalive: true, method: 'POST' })` in `flushPendingSave()`.
+   - Removed duplicate self-referential `greendream_state_updated` event listener to stop infinite reload loops.
+
+3. **Lifecycle Loop Stabilization in `appLifecycleLoop.ts`:**
+   - Added `needsRepair` guard so `db.updateState()` is ONLY invoked when anomalies actually exist.
+   - Stopped unconditional 30-second re-renders and app remounts.
+
+4. **Component Import Corrections & Glass Consolidation:**
+   - Corrected all lingering `'../glass'` imports to `'../ui'` across 9 finance and gym cards.
+   - Exported `GlassTile` from `src/components/ui/Card.tsx`.
+   - All 127 automated tests pass (`scripts/run_all_tests.mjs`).
+   - Production build (`npm run build`) completed successfully with 0 errors.
+
+---
+
+## Phase 4: Verification on Mobile Viewport (In Progress)
+- Target: 3 consecutive runs verifying immediate persistence across screen switches, backgrounding (30s), and page reloads.
    - Remove the unsafe `isLocalFresh` heuristic that wiped out non-financial data.
    - In `flushPendingSave()`, immediately trigger synchronous storage save and flush `syncToServer()` using reliable `fetch` with `keepalive: true` instead of oversized `sendBeacon`.
    - Resolve proper mobile and local server endpoints: keep `SaveFeedbackBadge` updated with `Saving...`, `Saved`, and clear error with auto-retry.

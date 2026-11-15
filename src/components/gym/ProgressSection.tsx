@@ -8,7 +8,7 @@ import {
   ArrowUpRight, 
   ArrowDownRight 
 } from 'lucide-react';
-import { GlassTile, AccentChip } from '../glass';
+import { GlassTile, AccentChip } from '../ui';
 import { 
   StatRange, 
   RangeDerivedStats, 

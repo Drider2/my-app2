@@ -7,8 +7,8 @@ const REMEMBER_KEY = 'gd_auth_remember_device';
 const FAILED_ATTEMPTS_KEY = 'gd_auth_failed_attempts';
 const LOCKOUT_UNTIL_KEY = 'gd_auth_lockout_until';
 
-// Default initial master password
-export const DEFAULT_MASTER_PASSWORD = 'greendream2026';
+// Initial master password hash (SHA-256 with salt) - plaintext password never stored in code
+const INITIAL_MASTER_PASSWORD_HASH = '54894ac9668bad46c7c37fd4ab4bbc8f8063d8be93905e24038c8fad210203eb';
 
 /**
  * Computes a SHA-256 hex hash using standard Web Crypto API.
@@ -74,9 +74,8 @@ export async function verifyMasterPassword(enteredPassword: string, rememberDevi
 
   const enteredHash = await sha256(enteredPassword.trim());
   const storedHash = localStorage.getItem(PWD_HASH_KEY);
-  const defaultHash = await sha256(DEFAULT_MASTER_PASSWORD);
 
-  const targetHash = storedHash || defaultHash;
+  const targetHash = storedHash || INITIAL_MASTER_PASSWORD_HASH;
   const isMatch = enteredHash === targetHash;
 
   if (isMatch) {

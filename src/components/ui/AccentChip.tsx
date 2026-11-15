@@ -1,6 +1,6 @@
 import React from 'react';
 
-interface AccentChipProps extends React.HTMLAttributes<HTMLDivElement> {
+export interface AccentChipProps extends React.HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode;
   className?: string;
   icon?: React.ReactNode;

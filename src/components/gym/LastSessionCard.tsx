@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Dumbbell, ChevronDown, TrendingUp, X } from 'lucide-react';
-import { GlassCard, AccentChip } from '../glass';
+import { Card, AccentChip } from '../ui';
 import { ExerciseSessionComparison, formatWeight } from '../../services/gymDerivedStats';
 import { Exercise } from '../../types';
 import { useTranslation } from '../../services/i18n';
@@ -27,7 +27,7 @@ export const LastSessionCard: React.FC<LastSessionCardProps> = ({
 
   return (
     <>
-      <GlassCard className={`space-y-4 p-4 sm:p-5 ${className}`}>
+      <Card className={`space-y-4 p-4 sm:p-5 ${className}`}>
         {/* Header Row */}
         <div className="flex items-center justify-between gap-3">
           <button
@@ -108,7 +108,7 @@ export const LastSessionCard: React.FC<LastSessionCardProps> = ({
             {t('gym.firstSessionPrompt', 'Do this exercise again to see your progress')}
           </p>
         ) : null}
-      </GlassCard>
+      </Card>
 
       {/* Glass Bottom Sheet Exercise Switcher Modal */}
       {isSwitcherOpen && (

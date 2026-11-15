@@ -1,6 +1,6 @@
 import React from 'react';
 import { Dumbbell, Play, CheckCircle2, Plus, Sparkles, Moon } from 'lucide-react';
-import { GlassCard, AccentChip } from '../glass';
+import { Card, AccentChip } from '../ui';
 import { TodayPlanState } from '../../services/gymDerivedStats';
 import { useTranslation } from '../../services/i18n';
 
@@ -22,7 +22,7 @@ export const TodayWorkoutCard: React.FC<TodayWorkoutCardProps> = ({
   const { t } = useTranslation();
 
   return (
-    <GlassCard className={`space-y-4 p-4 sm:p-5 ${className}`}>
+    <Card className={`space-y-4 p-4 sm:p-5 ${className}`}>
       {/* Top Header Row */}
       <div className="flex items-center justify-between">
         <h2 className="text-[16px] font-medium text-[var(--text-1)] tracking-tight">
@@ -192,7 +192,7 @@ export const TodayWorkoutCard: React.FC<TodayWorkoutCardProps> = ({
           </div>
         </>
       )}
-    </GlassCard>
+    </Card>
   );
 };
 

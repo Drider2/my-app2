@@ -134,7 +134,7 @@ export const RestTimerModal: React.FC<RestTimerModalProps> = ({
   const strokeDashoffset = 440 - (440 * progressPercent) / 100;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fade-in overflow-y-auto">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80  animate-fade-in overflow-y-auto">
       <div className="relative w-full max-w-sm rounded-3xl bg-[var(--surface)] border border-[var(--hairline)] shadow-2xl overflow-hidden my-auto p-5 text-center space-y-4">
         {/* Modal Top Bar */}
         <div className="flex items-center justify-between">

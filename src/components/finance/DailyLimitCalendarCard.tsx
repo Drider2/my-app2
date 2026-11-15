@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { AlertCircle, CheckCircle2 } from 'lucide-react';
-import { GlassCard, AccentChip } from '../glass';
+import { Card, AccentChip } from '../ui';
 import { HatchedBar } from './HatchedBar';
 import {
   DayStatusResult,
@@ -55,7 +55,7 @@ export const DailyLimitCalendarCard: React.FC<DailyLimitCalendarCardProps> = ({
   const formattedActiveTotal = activeDay ? formatMoneyParts(activeDay.totalSpentMinor, currencyLabel, language === 'ar' ? 'ar-SA' : 'en-US') : null;
 
   return (
-    <GlassCard className={`p-4 sm:p-5 relative overflow-hidden ${className}`}>
+    <Card className={`p-4 sm:p-5 relative overflow-hidden ${className}`}>
       {/* Header: Title + Cycle Label on End */}
       <div className="flex items-center justify-between mb-3.5">
         <h3 className="text-[16px] font-medium text-[var(--text-1)]">
@@ -238,6 +238,6 @@ export const DailyLimitCalendarCard: React.FC<DailyLimitCalendarCardProps> = ({
           )}
         </div>
       )}
-    </GlassCard>
+    </Card>
   );
 };

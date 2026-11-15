@@ -42,14 +42,14 @@ export const SaveFeedbackBadge: React.FC = () => {
       className="fixed top-3 end-3 sm:end-6 z-[60] select-none pointer-events-auto transition-all animate-fade-in"
     >
       {status === 'saving' && (
-        <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[var(--color-surface)] border border-[var(--color-accent)] text-[var(--color-accent)] text-[12px] font-semibold shadow-lg backdrop-blur-md">
+        <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[var(--color-surface)] border border-[var(--color-accent)] text-[var(--color-accent)] text-[12px] font-semibold shadow-lg ">
           <Loader2 className="w-3.5 h-3.5 animate-spin" />
           <span>Saving...</span>
         </div>
       )}
 
       {status === 'saved' && (
-        <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[var(--color-surface)] border border-emerald-500/40 text-emerald-400 text-[12px] font-semibold shadow-lg backdrop-blur-md animate-enter">
+        <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[var(--color-surface)] border border-emerald-500/40 text-emerald-400 text-[12px] font-semibold shadow-lg  animate-enter">
           <Check className="w-3.5 h-3.5 stroke-[2.8]" />
           <span>Saved</span>
         </div>
