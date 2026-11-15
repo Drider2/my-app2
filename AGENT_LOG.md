@@ -76,8 +76,27 @@
 
 ---
 
-## Phase 4: Verification on Mobile Viewport (In Progress)
-- Target: 3 consecutive runs verifying immediate persistence across screen switches, backgrounding (30s), and page reloads.
+## Phase 4: Verification on Mobile Viewport (Completed — 3/3 Runs Passed)
+- **Viewport Tested:** 390x844 (Mobile phone).
+- **Run 1 Passed:**
+  - Accent color updated to Violet Haze, habit "Read 20 pages" added & completed, Dhuhr prayer marked completed.
+  - Switched to Money screen, waited 3s, returned: 100% retained.
+  - Simulated page reload: 100% retained.
+  - Evidence: `phone_tests/04_verified_cycle1.png`.
+- **Run 2 Passed:**
+  - Scaled text size to 110%, added habit "Daily Reading" & completed (2/2 Done).
+  - Switched to Weekly Review screen, waited 3s, returned: 100% retained.
+  - Backgrounding simulation (`visibilitychange` hidden -> wait 30s -> visible) + page reload: 100% retained.
+  - Evidence: `phone_tests/05_verified_cycle2.png`.
+- **Run 3 Passed:**
+  - Logged hydration +500ml (0.50L / 2.50L progress).
+  - Rapid screen switching across Money, Prayers, Today, More without pauses.
+  - Full browser reload: 100% retained.
+  - Evidence: `phone_tests/06_verified_cycle3.png`.
+
+---
+
+## Phase 5: Push to GitHub & Deploy to Live (In Progress)
    - Remove the unsafe `isLocalFresh` heuristic that wiped out non-financial data.
    - In `flushPendingSave()`, immediately trigger synchronous storage save and flush `syncToServer()` using reliable `fetch` with `keepalive: true` instead of oversized `sendBeacon`.
    - Resolve proper mobile and local server endpoints: keep `SaveFeedbackBadge` updated with `Saving...`, `Saved`, and clear error with auto-retry.
